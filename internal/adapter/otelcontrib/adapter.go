@@ -3,12 +3,12 @@ package otelcontrib
 import (
 	"context"
 
-	"github.com/base14/otel-glossary/internal/adapter"
-	"github.com/base14/otel-glossary/internal/discovery"
-	"github.com/base14/otel-glossary/internal/domain"
-	"github.com/base14/otel-glossary/internal/extractor"
-	"github.com/base14/otel-glossary/internal/fetcher"
-	"github.com/base14/otel-glossary/internal/parser"
+	"github.com/base-14/metric-library/internal/adapter"
+	"github.com/base-14/metric-library/internal/discovery"
+	"github.com/base-14/metric-library/internal/domain"
+	"github.com/base-14/metric-library/internal/extractor"
+	"github.com/base-14/metric-library/internal/fetcher"
+	"github.com/base-14/metric-library/internal/parser"
 )
 
 const (

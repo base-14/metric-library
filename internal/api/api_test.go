@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/base14/otel-glossary/internal/domain"
-	"github.com/base14/otel-glossary/internal/store"
+	"github.com/base-14/metric-library/internal/domain"
+	"github.com/base-14/metric-library/internal/store"
 )
 
 type mockStore struct {

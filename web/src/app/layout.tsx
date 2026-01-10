@@ -14,8 +14,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OTel Glossary - OpenTelemetry Metrics Discovery",
-  description: "Discover and explore OpenTelemetry metrics from various sources",
+  title: "metric-library - Metric Discovery Platform",
+  description: "Discover and explore metrics from OpenTelemetry, Prometheus exporters, and more",
 };
 
 export default function RootLayout({

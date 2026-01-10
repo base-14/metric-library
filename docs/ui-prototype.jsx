@@ -403,8 +403,8 @@ export default function OTelGlossary() {
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">OTel Glossary</h1>
-              <p className="text-sm text-gray-500">Search OpenTelemetry metrics from collector-contrib</p>
+              <h1 className="text-2xl font-bold text-gray-900 font-mono">metric-library</h1>
+              <p className="text-sm text-gray-500">Metric discovery platform</p>
             </div>
           </div>
           

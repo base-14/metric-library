@@ -3,7 +3,7 @@ package enricher
 import (
 	"testing"
 
-	"github.com/base14/otel-glossary/internal/domain"
+	"github.com/base-14/metric-library/internal/domain"
 )
 
 func TestSemconvEnricher_ExactMatch(t *testing.T) {

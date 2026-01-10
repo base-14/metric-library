@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/base14/otel-glossary/internal/adapter"
-	"github.com/base14/otel-glossary/internal/domain"
+	"github.com/base-14/metric-library/internal/adapter"
+	"github.com/base-14/metric-library/internal/domain"
 )
 
 func TestMySQLAdapter_Name(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/base14/otel-glossary/internal/domain"
+	"github.com/base-14/metric-library/internal/domain"
 )
 
 type SQLiteStore struct {

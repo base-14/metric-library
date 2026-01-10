@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/base14/otel-glossary/internal/domain"
+	"github.com/base-14/metric-library/internal/domain"
 )
 
 type mockAdapter struct {

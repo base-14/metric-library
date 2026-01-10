@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/base14/otel-glossary/internal/adapter"
-	"github.com/base14/otel-glossary/internal/domain"
-	"github.com/base14/otel-glossary/internal/fetcher"
+	"github.com/base-14/metric-library/internal/adapter"
+	"github.com/base-14/metric-library/internal/domain"
+	"github.com/base-14/metric-library/internal/fetcher"
 )
 
 const repoURL = "https://github.com/google/cadvisor"

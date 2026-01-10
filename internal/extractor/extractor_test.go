@@ -3,8 +3,8 @@ package extractor
 import (
 	"testing"
 
-	"github.com/base14/otel-glossary/internal/domain"
-	"github.com/base14/otel-glossary/internal/parser"
+	"github.com/base-14/metric-library/internal/domain"
+	"github.com/base-14/metric-library/internal/parser"
 )
 
 func TestMetricExtractor_Extract(t *testing.T) {

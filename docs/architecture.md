@@ -345,7 +345,7 @@ const (
 ## 5. Package Structure
 
 ```
-otel-glossary/
+metric-library/
 ├── cmd/
 │   └── glossary/
 │       └── main.go              # Application entry point

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/base14/otel-glossary/internal/adapter"
-	"github.com/base14/otel-glossary/internal/domain"
+	"github.com/base-14/metric-library/internal/adapter"
+	"github.com/base-14/metric-library/internal/domain"
 )
 
 func TestAdapterName(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/base14/otel-glossary
+module github.com/base-14/metric-library
 
 go 1.25
 

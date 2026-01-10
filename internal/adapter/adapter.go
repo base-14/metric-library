@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/base14/otel-glossary/internal/domain"
+	"github.com/base-14/metric-library/internal/domain"
 )
 
 type FetchOptions struct {

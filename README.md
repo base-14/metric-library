@@ -1,10 +1,10 @@
-# OTel Glossary
+# metric-library
 
-A metric discovery platform for cataloging and searching OpenTelemetry metrics from various sources.
+A metric discovery platform for cataloging and searching metrics from OpenTelemetry, Prometheus exporters, and more.
 
 ## Purpose
 
-OTel Glossary extracts metric definitions from OpenTelemetry Collector components (receivers, processors, exporters) and other sources, storing them in a searchable catalog. It provides a web interface for discovering metrics by name, type, component, and source.
+metric-library extracts metric definitions from OpenTelemetry Collector components, Prometheus exporters, Kubernetes tooling, and other sources, storing them in a searchable catalog. It provides a web interface for discovering metrics by name, type, component, and source.
 
 ## Architecture
 
@@ -126,7 +126,7 @@ make migrate-status   # Check migration status
 ### Project Structure
 
 ```
-otel-glossary/
+metric-library/
 ├── cmd/glossary/          # Main entry point
 ├── internal/
 │   ├── api/               # REST API handlers
