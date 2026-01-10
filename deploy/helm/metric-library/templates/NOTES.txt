@@ -1,0 +1,28 @@
+metric-library has been deployed!
+
+{{- if .Values.ingress.enabled }}
+Access the application at:
+{{- range $host := .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}
+{{- end }}
+{{- else }}
+
+To access the application, run:
+
+  # Port forward the web service
+  kubectl port-forward svc/{{ include "metric-library.fullname" . }}-web {{ .Values.web.service.port }}:{{ .Values.web.service.port }}
+
+Then open http://localhost:{{ .Values.web.service.port }} in your browser.
+
+To access the API directly:
+
+  kubectl port-forward svc/{{ include "metric-library.fullname" . }}-api {{ .Values.api.service.port }}:{{ .Values.api.service.port }}
+
+API will be available at http://localhost:{{ .Values.api.service.port }}
+{{- end }}
+
+{{- if not .Values.persistence.enabled }}
+
+WARNING: Persistence is disabled. Data will be lost when the pod restarts.
+To enable persistence, set persistence.enabled=true
+{{- end }}

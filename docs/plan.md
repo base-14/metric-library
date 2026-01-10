@@ -293,10 +293,10 @@ Outcome:
 * [x] Filter by source category (otel, prometheus, kubernetes, cloud, vendor)
 * [x] Filter by source name
 * [x] Filter by confidence level (authoritative, derived, documented, vendor_claimed)
-* [ ] Filter by attribute name
 * [x] Combined filters (AND logic)
 * [x] Pagination support
 * [x] Facet counts for filter options
+* [x] URL state for filters and detail views (shareable links)
 
 ### Prometheus Exporters
 
@@ -435,7 +435,7 @@ Outcome:
 * [x] Docker standalone build (Next.js frontend)
 * [x] docker-compose for local development
 * [x] make extract command for CLI extraction
-* [ ] Helm chart for Kubernetes deployment
+* [x] Helm chart for Kubernetes deployment
 
 ---
 
@@ -467,7 +467,7 @@ Users can discover metrics by:
 * **Component**: "What metrics does the kafka receiver emit?"
 * **Source category**: "Show all Prometheus metrics" or "List OTEL metrics"
 * **Confidence**: "Show only authoritative metrics"
-* **Attributes**: "Find metrics with the `http.method` attribute"
 * **Combined**: "Gauges from kubernetes with high confidence"
+* **Shareable URLs**: Bookmark or share search results and metric details
 
 This document is the source of truth for execution.

@@ -1,25 +1,64 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { SearchBar } from '@/components/SearchBar';
 import { FilterPanel } from '@/components/FilterPanel';
 import { MetricCard } from '@/components/MetricCard';
 import { MetricDetail } from '@/components/MetricDetail';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { searchMetrics, getFacets } from '@/lib/api';
+import { searchMetrics, getFacets, getMetric } from '@/lib/api';
 import { CanonicalMetric, FacetResponse, SearchParams } from '@/types/api';
 
+const FILTER_KEYS = [
+  'q',
+  'instrument_type',
+  'component_type',
+  'component_name',
+  'source_category',
+  'source_name',
+  'semconv_match',
+] as const;
+
 export default function Home() {
+  const router = useRouter();
+  const urlSearchParams = useSearchParams();
+
   const [metrics, setMetrics] = useState<CanonicalMetric[]>([]);
   const [facets, setFacets] = useState<FacetResponse | null>(null);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<CanonicalMetric | null>(null);
-  const [searchParams, setSearchParams] = useState<SearchParams>({
-    limit: 20,
-    offset: 0,
-  });
+
+  const searchParams = useMemo<SearchParams>(() => {
+    const params: SearchParams = { limit: 20, offset: 0 };
+    for (const key of FILTER_KEYS) {
+      const value = urlSearchParams.get(key);
+      if (value) {
+        params[key] = value;
+      }
+    }
+    return params;
+  }, [urlSearchParams]);
+
+  const updateUrl = useCallback(
+    (newParams: SearchParams, metricId?: string | null) => {
+      const params = new URLSearchParams();
+      for (const key of FILTER_KEYS) {
+        const value = newParams[key];
+        if (value) {
+          params.set(key, value);
+        }
+      }
+      if (metricId) {
+        params.set('metric', metricId);
+      }
+      const queryString = params.toString();
+      router.replace(queryString ? `?${queryString}` : '/', { scroll: false });
+    },
+    [router]
+  );
 
   const fetchMetrics = useCallback(async () => {
     setLoading(true);
@@ -52,27 +91,52 @@ export default function Home() {
     fetchFacets(searchParams.source_name);
   }, [fetchFacets, searchParams.source_name]);
 
-  const handleSearch = useCallback((query: string) => {
-    setSearchParams((prev) => ({
-      ...prev,
-      q: query || undefined,
-      offset: 0,
-    }));
-  }, []);
+  useEffect(() => {
+    const metricId = urlSearchParams.get('metric');
+    if (metricId && (!selectedMetric || selectedMetric.id !== metricId)) {
+      getMetric(metricId)
+        .then(setSelectedMetric)
+        .catch(() => {
+          updateUrl(searchParams, null);
+        });
+    } else if (!metricId && selectedMetric) {
+      setSelectedMetric(null);
+    }
+  }, [urlSearchParams, selectedMetric, searchParams, updateUrl]);
 
-  const handleFilterChange = (key: string, value: string | undefined) => {
-    setSearchParams((prev) => ({
-      ...prev,
-      [key]: value,
-      offset: 0,
-    }));
-  };
+  const handleSearch = useCallback(
+    (query: string) => {
+      const newParams = { ...searchParams, q: query || undefined, offset: 0 };
+      updateUrl(newParams, urlSearchParams.get('metric'));
+    },
+    [searchParams, updateUrl, urlSearchParams]
+  );
+
+  const handleFilterChange = useCallback(
+    (key: string, value: string | undefined) => {
+      const newParams = { ...searchParams, [key]: value, offset: 0 };
+      updateUrl(newParams, urlSearchParams.get('metric'));
+    },
+    [searchParams, updateUrl, urlSearchParams]
+  );
+
+  const handleMetricClick = useCallback(
+    (metric: CanonicalMetric) => {
+      setSelectedMetric(metric);
+      updateUrl(searchParams, metric.id);
+    },
+    [searchParams, updateUrl]
+  );
+
+  const handleMetricClose = useCallback(() => {
+    setSelectedMetric(null);
+    updateUrl(searchParams, null);
+  }, [searchParams, updateUrl]);
 
   const handleLoadMore = () => {
-    setSearchParams((prev) => ({
-      ...prev,
-      offset: (prev.offset || 0) + (prev.limit || 20),
-    }));
+    const newOffset = (searchParams.offset || 0) + (searchParams.limit || 20);
+    const newParams = { ...searchParams, offset: newOffset };
+    updateUrl(newParams, urlSearchParams.get('metric'));
   };
 
   const selectedFilters = {
@@ -88,7 +152,7 @@ export default function Home() {
   const hasActiveFilters = activeFilters.length > 0 || searchParams.q;
 
   const clearAllFilters = () => {
-    setSearchParams({ limit: 20, offset: 0 });
+    updateUrl({ limit: 20, offset: 0 }, null);
   };
 
   const filterLabels: Record<string, string> = {
@@ -190,7 +254,7 @@ export default function Home() {
                 <MetricCard
                   key={metric.id}
                   metric={metric}
-                  onClick={setSelectedMetric}
+                  onClick={handleMetricClick}
                 />
               ))}
             </div>
@@ -218,7 +282,7 @@ export default function Home() {
       {selectedMetric && (
         <MetricDetail
           metric={selectedMetric}
-          onClose={() => setSelectedMetric(null)}
+          onClose={handleMetricClose}
         />
       )}
     </div>

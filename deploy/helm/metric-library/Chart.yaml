@@ -1,0 +1,17 @@
+apiVersion: v2
+name: metric-library
+description: A metric discovery platform for cataloging and searching metrics
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - metrics
+  - opentelemetry
+  - prometheus
+  - observability
+  - discovery
+home: https://github.com/base-14/metric-library
+sources:
+  - https://github.com/base-14/metric-library
+maintainers:
+  - name: base-14
