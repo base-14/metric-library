@@ -140,7 +140,18 @@ func (h *Handler) getMetric(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getFacets(w http.ResponseWriter, r *http.Request) {
-	facets, err := h.store.GetFacetCounts(r.Context())
+	var facets *store.FacetCounts
+	var err error
+
+	sourceName := r.URL.Query().Get("source_name")
+	if sourceName != "" {
+		facets, err = h.store.GetFilteredFacetCounts(r.Context(), store.FacetQuery{
+			SourceName: sourceName,
+		})
+	} else {
+		facets, err = h.store.GetFacetCounts(r.Context())
+	}
+
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "get_facets_failed", err.Error())
 		return

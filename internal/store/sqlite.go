@@ -262,10 +262,11 @@ func (s *SQLiteStore) Search(ctx context.Context, query SearchQuery) (*SearchRes
 	var conditions []string
 	var args []interface{}
 
-	// Full-text search
+	// Substring search using LIKE on metric_name and description only
 	if query.Text != "" {
-		conditions = append(conditions, "m.rowid IN (SELECT rowid FROM metrics_fts WHERE metrics_fts MATCH ?)")
-		args = append(args, query.Text)
+		searchPattern := "%" + query.Text + "%"
+		conditions = append(conditions, "(m.metric_name LIKE ? OR m.description LIKE ?)")
+		args = append(args, searchPattern, searchPattern)
 	}
 
 	// Filters
@@ -363,15 +364,26 @@ func (s *SQLiteStore) Search(ctx context.Context, query SearchQuery) (*SearchRes
 		offset = 0
 	}
 
-	//nolint:gosec // SQL injection not possible - whereClause uses parameterized queries
+	// Order by: metric_name matches first, then description matches, then alphabetically
+	orderClause := "ORDER BY m.metric_name"
+	if query.Text != "" {
+		searchPattern := "%" + query.Text + "%"
+		orderClause = `ORDER BY
+			CASE WHEN m.metric_name LIKE ? THEN 0 ELSE 1 END,
+			CASE WHEN m.description LIKE ? THEN 0 ELSE 1 END,
+			m.metric_name`
+		args = append(args, searchPattern, searchPattern)
+	}
+
+	//nolint:gosec // SQL injection not possible - whereClause and orderClause use parameterized queries
 	selectQuery := fmt.Sprintf(`
 		SELECT id, metric_name, instrument_type, description, unit, enabled_by_default,
 			component_type, component_name, source_category, source_name, source_location,
 			extraction_method, source_confidence, repo, path, "commit", extracted_at
 		FROM metrics m %s
-		ORDER BY m.metric_name
+		%s
 		LIMIT ? OFFSET ?
-	`, whereClause)
+	`, whereClause, orderClause)
 
 	args = append(args, limit, offset)
 
@@ -450,6 +462,76 @@ func (s *SQLiteStore) GetFacetCounts(ctx context.Context) (*FacetCounts, error) 
 
 	for _, q := range queries {
 		rows, err := s.db.QueryContext(ctx, q.query)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query facets: %w", err)
+		}
+
+		for rows.Next() {
+			var key string
+			var count int
+			if err := rows.Scan(&key, &count); err != nil {
+				_ = rows.Close()
+				return nil, fmt.Errorf("failed to scan facet: %w", err)
+			}
+
+			switch target := q.target.(type) {
+			case *map[domain.InstrumentType]int:
+				(*target)[domain.InstrumentType(key)] = count
+			case *map[domain.ComponentType]int:
+				(*target)[domain.ComponentType(key)] = count
+			case *map[string]int:
+				(*target)[key] = count
+			case *map[domain.SourceCategory]int:
+				(*target)[domain.SourceCategory(key)] = count
+			case *map[domain.ConfidenceLevel]int:
+				(*target)[domain.ConfidenceLevel(key)] = count
+			}
+		}
+		_ = rows.Close()
+	}
+
+	return facets, nil
+}
+
+func (s *SQLiteStore) GetFilteredFacetCounts(ctx context.Context, query FacetQuery) (*FacetCounts, error) {
+	facets := &FacetCounts{
+		InstrumentTypes:  make(map[domain.InstrumentType]int),
+		ComponentTypes:   make(map[domain.ComponentType]int),
+		ComponentNames:   make(map[string]int),
+		SourceCategories: make(map[domain.SourceCategory]int),
+		SourceNames:      make(map[string]int),
+		ConfidenceLevels: make(map[domain.ConfidenceLevel]int),
+		Units:            make(map[string]int),
+	}
+
+	whereClause := ""
+	var args []interface{}
+	if query.SourceName != "" {
+		whereClause = " WHERE source_name = ?"
+		args = append(args, query.SourceName)
+	}
+
+	queries := []struct {
+		query  string
+		target interface{}
+	}{
+		{"SELECT instrument_type, COUNT(*) FROM metrics" + whereClause + " GROUP BY instrument_type", &facets.InstrumentTypes},
+		{"SELECT component_type, COUNT(*) FROM metrics" + whereClause + " GROUP BY component_type", &facets.ComponentTypes},
+		{"SELECT component_name, COUNT(*) FROM metrics" + whereClause + " GROUP BY component_name", &facets.ComponentNames},
+		{"SELECT source_category, COUNT(*) FROM metrics" + whereClause + " GROUP BY source_category", &facets.SourceCategories},
+		{"SELECT source_name, COUNT(*) FROM metrics GROUP BY source_name", &facets.SourceNames}, // Always show all sources
+		{"SELECT source_confidence, COUNT(*) FROM metrics" + whereClause + " GROUP BY source_confidence", &facets.ConfidenceLevels},
+		{"SELECT unit, COUNT(*) FROM metrics WHERE unit IS NOT NULL AND unit != ''" + strings.Replace(whereClause, "WHERE", "AND", 1) + " GROUP BY unit", &facets.Units},
+	}
+
+	for _, q := range queries {
+		var rows *sql.Rows
+		var err error
+		if strings.Contains(q.query, "?") {
+			rows, err = s.db.QueryContext(ctx, q.query, args...)
+		} else {
+			rows, err = s.db.QueryContext(ctx, q.query)
+		}
 		if err != nil {
 			return nil, fmt.Errorf("failed to query facets: %w", err)
 		}

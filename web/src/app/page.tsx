@@ -35,9 +35,9 @@ export default function Home() {
     }
   }, [searchParams]);
 
-  const fetchFacets = useCallback(async () => {
+  const fetchFacets = useCallback(async (sourceName?: string) => {
     try {
-      const response = await getFacets();
+      const response = await getFacets(sourceName);
       setFacets(response);
     } catch (err) {
       console.error('Failed to fetch facets:', err);
@@ -49,8 +49,8 @@ export default function Home() {
   }, [fetchMetrics]);
 
   useEffect(() => {
-    fetchFacets();
-  }, [fetchFacets]);
+    fetchFacets(searchParams.source_name);
+  }, [fetchFacets, searchParams.source_name]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchParams((prev) => ({
@@ -80,6 +80,7 @@ export default function Home() {
     component_type: searchParams.component_type,
     component_name: searchParams.component_name,
     source_category: searchParams.source_category,
+    source_name: searchParams.source_name,
   };
 
   const activeFilters = Object.entries(selectedFilters).filter(([, value]) => value);
@@ -93,7 +94,8 @@ export default function Home() {
     instrument_type: 'Type',
     component_type: 'Component Type',
     component_name: 'Component',
-    source_category: 'Source',
+    source_category: 'Source Category',
+    source_name: 'Source',
   };
 
   return (

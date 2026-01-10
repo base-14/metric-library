@@ -30,7 +30,7 @@ export function MetricCard({ metric, onClick }: MetricCardProps) {
       onClick={() => onClick?.(metric)}
     >
       <div className="flex items-start justify-between mb-2">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white break-all">
+        <h3 className="text-lg font-semibold font-mono text-gray-900 dark:text-white break-all">
           {metric.metric_name}
         </h3>
         <div className="flex gap-2 flex-shrink-0 ml-2">

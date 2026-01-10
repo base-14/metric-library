@@ -288,6 +288,103 @@ func TestSQLiteStore_Search_Text(t *testing.T) {
 	}
 }
 
+func TestSQLiteStore_Search_TextOrdering(t *testing.T) {
+	store := setupTestStore(t)
+	ctx := context.Background()
+
+	metrics := []*domain.CanonicalMetric{
+		func() *domain.CanonicalMetric {
+			m := testMetric()
+			m.MetricName = "http.server.request.duration"
+			m.Description = "Measures memory usage"
+			return m
+		}(),
+		func() *domain.CanonicalMetric {
+			m := testMetric()
+			m.MetricName = "system.memory.utilization"
+			m.Description = "System memory utilization"
+			return m
+		}(),
+		func() *domain.CanonicalMetric {
+			m := testMetric()
+			m.MetricName = "process.runtime.heap"
+			m.Description = "Process heap memory usage"
+			return m
+		}(),
+	}
+
+	if err := store.UpsertMetrics(ctx, metrics); err != nil {
+		t.Fatalf("UpsertMetrics failed: %v", err)
+	}
+
+	result, err := store.Search(ctx, SearchQuery{Text: "memory"})
+	if err != nil {
+		t.Fatalf("Search failed: %v", err)
+	}
+
+	if result.Total != 3 {
+		t.Errorf("Total = %d, want 3", result.Total)
+	}
+
+	if len(result.Metrics) != 3 {
+		t.Fatalf("Metrics count = %d, want 3", len(result.Metrics))
+	}
+
+	// First should be the one with "memory" in metric_name
+	if result.Metrics[0].MetricName != "system.memory.utilization" {
+		t.Errorf("First result = %s, want system.memory.utilization (metric_name match)", result.Metrics[0].MetricName)
+	}
+
+	// The other two have "memory" only in description, ordered alphabetically
+	if result.Metrics[1].MetricName != "http.server.request.duration" {
+		t.Errorf("Second result = %s, want http.server.request.duration", result.Metrics[1].MetricName)
+	}
+
+	if result.Metrics[2].MetricName != "process.runtime.heap" {
+		t.Errorf("Third result = %s, want process.runtime.heap", result.Metrics[2].MetricName)
+	}
+}
+
+func TestSQLiteStore_Search_TextOnlyMatchesMetricNameAndDescription(t *testing.T) {
+	store := setupTestStore(t)
+	ctx := context.Background()
+
+	metrics := []*domain.CanonicalMetric{
+		func() *domain.CanonicalMetric {
+			m := testMetric()
+			m.MetricName = "http.request.duration"
+			m.Description = "HTTP request duration"
+			m.ComponentName = "kafkareceiver"
+			m.SourceName = "kafka-exporter"
+			return m
+		}(),
+	}
+
+	if err := store.UpsertMetrics(ctx, metrics); err != nil {
+		t.Fatalf("UpsertMetrics failed: %v", err)
+	}
+
+	// Should NOT match on component_name
+	result, err := store.Search(ctx, SearchQuery{Text: "kafka"})
+	if err != nil {
+		t.Fatalf("Search failed: %v", err)
+	}
+
+	if result.Total != 0 {
+		t.Errorf("Total = %d, want 0 (should not match component_name or source_name)", result.Total)
+	}
+
+	// Should match on metric_name
+	result, err = store.Search(ctx, SearchQuery{Text: "request"})
+	if err != nil {
+		t.Fatalf("Search failed: %v", err)
+	}
+
+	if result.Total != 1 {
+		t.Errorf("Total = %d, want 1 (should match metric_name)", result.Total)
+	}
+}
+
 func TestSQLiteStore_Search_Filters(t *testing.T) {
 	store := setupTestStore(t)
 	ctx := context.Background()

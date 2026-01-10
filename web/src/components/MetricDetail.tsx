@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CanonicalMetric } from '@/types/api';
 
 interface MetricDetailProps {
@@ -10,6 +10,16 @@ interface MetricDetailProps {
 
 export function MetricDetail({ metric, onClose }: MetricDetailProps) {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(metric.metric_name);
@@ -31,7 +41,7 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white break-all">
+            <h2 className="text-xl font-semibold font-mono text-gray-900 dark:text-white break-all">
               {metric.metric_name}
             </h2>
             <button

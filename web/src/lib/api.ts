@@ -35,8 +35,12 @@ export async function getMetric(id: string): Promise<CanonicalMetric> {
   return response.json();
 }
 
-export async function getFacets(): Promise<FacetResponse> {
-  const response = await fetch(`${API_BASE}/api/facets`);
+export async function getFacets(sourceName?: string): Promise<FacetResponse> {
+  const params = new URLSearchParams();
+  if (sourceName) params.set('source_name', sourceName);
+
+  const url = params.toString() ? `${API_BASE}/api/facets?${params.toString()}` : `${API_BASE}/api/facets`;
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Failed to get facets: ${response.statusText}`);

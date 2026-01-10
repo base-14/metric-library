@@ -37,6 +37,10 @@ type FacetCounts struct {
 	Units            map[string]int
 }
 
+type FacetQuery struct {
+	SourceName string
+}
+
 type ExtractionRun struct {
 	ID           string
 	AdapterName  string
@@ -59,6 +63,7 @@ type Store interface {
 	// Search
 	Search(ctx context.Context, query SearchQuery) (*SearchResult, error)
 	GetFacetCounts(ctx context.Context) (*FacetCounts, error)
+	GetFilteredFacetCounts(ctx context.Context, query FacetQuery) (*FacetCounts, error)
 
 	// Extraction runs
 	CreateExtractionRun(ctx context.Context, run *ExtractionRun) error

@@ -100,6 +100,10 @@ func (m *mockStore) GetFacetCounts(ctx context.Context) (*store.FacetCounts, err
 	}, nil
 }
 
+func (m *mockStore) GetFilteredFacetCounts(ctx context.Context, query store.FacetQuery) (*store.FacetCounts, error) {
+	return m.GetFacetCounts(ctx)
+}
+
 func (m *mockStore) CreateExtractionRun(ctx context.Context, run *store.ExtractionRun) error {
 	return nil
 }

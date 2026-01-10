@@ -77,6 +77,10 @@ func (m *mockStore) GetFacetCounts(ctx context.Context) (*store.FacetCounts, err
 	return nil, nil
 }
 
+func (m *mockStore) GetFilteredFacetCounts(ctx context.Context, query store.FacetQuery) (*store.FacetCounts, error) {
+	return nil, nil
+}
+
 func (m *mockStore) CreateExtractionRun(ctx context.Context, run *store.ExtractionRun) error {
 	m.runs = append(m.runs, run)
 	return nil

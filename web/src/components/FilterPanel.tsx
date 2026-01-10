@@ -9,6 +9,7 @@ interface FilterPanelProps {
     component_type?: string;
     component_name?: string;
     source_category?: string;
+    source_name?: string;
   };
   onFilterChange: (key: string, value: string | undefined) => void;
 }
@@ -38,6 +39,13 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
   return (
     <div className="space-y-6">
       <FilterSection
+        title="Source"
+        items={facets.source_names}
+        selectedValue={selectedFilters.source_name}
+        onSelect={(value) => handleFilterClick('source_name', value)}
+      />
+
+      <FilterSection
         title="Component"
         items={facets.component_names}
         selectedValue={selectedFilters.component_name}
@@ -59,7 +67,7 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
       />
 
       <FilterSection
-        title="Source"
+        title="Source Category"
         items={facets.source_categories}
         selectedValue={selectedFilters.source_category}
         onSelect={(value) => handleFilterClick('source_category', value)}

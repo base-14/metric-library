@@ -1,4 +1,4 @@
-.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs \
+.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
 	extract extract-otel extract-postgres extract-node extract-all \
 	web-build web-test web-lint build-all test-all lint-all
 
@@ -119,13 +119,15 @@ ci: ci-go ci-web
 
 # Docker targets
 docker-build:
-	docker compose build
+	COMPOSE_BAKE=true docker compose build
 
 docker-up:
 	docker compose up -d
 
 docker-down:
 	docker compose down
+
+docker-rebuild: docker-down docker-build docker-up
 
 docker-logs:
 	docker compose logs -f
