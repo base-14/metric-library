@@ -41,6 +41,9 @@ make docker-up
 make build            # Build Go binary
 cd web && make build  # Build frontend
 
+# Extract metrics
+make extract          # Extract metrics from otel-collector-contrib
+
 # Test
 make test             # Run Go tests
 cd web && make test   # Run frontend tests
