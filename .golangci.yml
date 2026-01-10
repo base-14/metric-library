@@ -12,22 +12,18 @@ linters:
     - misspell
     - unconvert
     - gosec
+  settings:
+    misspell:
+      locale: US
+    gosec:
+      excludes:
+        - G104
 
 formatters:
   enable:
     - gofmt
 
-linters-settings:
-  misspell:
-    locale: US
-  gosec:
-    excludes:
-      - G104
-
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - gosec
-  max-issues-per-linter: 0
-  max-same-issues: 0
+output:
+  formats:
+    text:
+      print-linter-name: true
