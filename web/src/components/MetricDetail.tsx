@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { CanonicalMetric } from '@/types/api';
 
 interface MetricDetailProps {
@@ -8,13 +9,48 @@ interface MetricDetailProps {
 }
 
 export function MetricDetail({ metric, onClose }: MetricDetailProps) {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(metric.metric_name);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getGitHubUrl = () => {
+    if (!metric.repo || !metric.source_location) return null;
+    const repoPath = metric.source_location.split(metric.repo.replace('https://github.com/', '').split('/').slice(0, 2).join('/'))[1];
+    if (!repoPath) return null;
+    return `${metric.repo}/blob/${metric.commit}${repoPath}`;
+  };
+
+  const githubUrl = getGitHubUrl();
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 break-all">
-            {metric.metric_name}
-          </h2>
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <h2 className="text-xl font-semibold text-gray-900 break-all">
+              {metric.metric_name}
+            </h2>
+            <button
+              onClick={copyToClipboard}
+              className="p-1.5 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
+              aria-label="Copy metric name"
+              title="Copy metric name"
+            >
+              {copied ? (
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              )}
+            </button>
+          </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -117,12 +153,8 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
                   <dd className="font-mono text-gray-700 break-all">{metric.repo}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500">Path</dt>
-                  <dd className="font-mono text-gray-700 break-all">{metric.path}</dd>
-                </div>
-                <div>
                   <dt className="text-gray-500">Commit</dt>
-                  <dd className="font-mono text-gray-700">{metric.commit}</dd>
+                  <dd className="font-mono text-gray-700">{metric.commit?.slice(0, 12)}</dd>
                 </div>
                 <div>
                   <dt className="text-gray-500">Extracted At</dt>
@@ -130,6 +162,21 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
                     {new Date(metric.extracted_at).toLocaleString()}
                   </dd>
                 </div>
+                {githubUrl && (
+                  <div className="mt-2">
+                    <a
+                      href={githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-sm rounded hover:bg-gray-700 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+                      </svg>
+                      View on GitHub
+                    </a>
+                  </div>
+                )}
               </dl>
             </section>
           </div>

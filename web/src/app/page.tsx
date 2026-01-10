@@ -81,6 +81,20 @@ export default function Home() {
     source_category: searchParams.source_category,
   };
 
+  const activeFilters = Object.entries(selectedFilters).filter(([, value]) => value);
+  const hasActiveFilters = activeFilters.length > 0 || searchParams.q;
+
+  const clearAllFilters = () => {
+    setSearchParams({ limit: 20, offset: 0 });
+  };
+
+  const filterLabels: Record<string, string> = {
+    instrument_type: 'Type',
+    component_type: 'Component Type',
+    component_name: 'Component',
+    source_category: 'Source',
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b border-gray-200">
@@ -93,12 +107,52 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-6">
           <SearchBar onSearch={handleSearch} initialValue={searchParams.q} />
         </div>
 
-        <div className="flex gap-8">
-          <aside className="w-64 flex-shrink-0">
+        {hasActiveFilters && (
+          <div className="mb-6 flex flex-wrap items-center gap-2">
+            <span className="text-sm text-gray-500">Active filters:</span>
+            {searchParams.q && (
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
+                Search: {searchParams.q}
+                <button
+                  onClick={() => handleSearch('')}
+                  className="ml-1 hover:text-blue-600"
+                  aria-label="Clear search"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            )}
+            {activeFilters.map(([key, value]) => (
+              <span key={key} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
+                {filterLabels[key]}: {value}
+                <button
+                  onClick={() => handleFilterChange(key, undefined)}
+                  className="ml-1 hover:text-blue-600"
+                  aria-label={`Clear ${filterLabels[key]} filter`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            ))}
+            <button
+              onClick={clearAllFilters}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          <aside className="w-full lg:w-64 flex-shrink-0">
             <FilterPanel
               facets={facets}
               selectedFilters={selectedFilters}
