@@ -38,6 +38,30 @@ persistence:
   storageClass: ""
   accessMode: ReadWriteOnce
 
+refresh:
+  enabled: true
+  schedule: "0 2 * * *"  # 2am daily
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  adapters:
+    - otel-collector-contrib
+    - otel-semconv
+    - prometheus-postgres
+    - prometheus-node
+    - prometheus-redis
+    - prometheus-mysql
+    - prometheus-mongodb
+    - prometheus-kafka
+    - kubernetes-ksm
+    - kubernetes-cadvisor
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
 ingress:
   enabled: false
   className: ""

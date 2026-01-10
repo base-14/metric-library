@@ -1,0 +1,81 @@
+{{- if .Values.refresh.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "metric-library.fullname" . }}-refresh
+  labels:
+    {{- include "metric-library.labels" . | nindent 4 }}
+    app.kubernetes.io/component: refresh
+spec:
+  schedule: {{ .Values.refresh.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.refresh.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.refresh.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "metric-library.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: refresh
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "metric-library.serviceAccountName" . }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          containers:
+            - name: refresh
+              image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+              imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  echo "Starting metric refresh at $(date)"
+                  {{- range .Values.refresh.adapters }}
+                  echo "Extracting from {{ . }}..."
+                  ./metric-library extract -adapter {{ . }}
+                  {{- end }}
+                  echo "Enriching metrics with semantic conventions..."
+                  ./metric-library enrich
+                  echo "Refresh completed at $(date)"
+              env:
+                - name: DATABASE_PATH
+                  value: /app/data/metric-library.db
+                - name: CACHE_DIR
+                  value: /app/cache
+              resources:
+                {{- toYaml .Values.refresh.resources | nindent 16 }}
+              volumeMounts:
+                - name: data
+                  mountPath: /app/data
+                - name: cache
+                  mountPath: /app/cache
+          volumes:
+            - name: data
+              {{- if .Values.persistence.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ include "metric-library.fullname" . }}-data
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+            - name: cache
+              emptyDir: {}
+          restartPolicy: OnFailure
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

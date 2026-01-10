@@ -402,7 +402,7 @@ Outcome:
 
 ### Automation
 
-* [ ] Nightly refresh job
+* [x] Nightly refresh job (Kubernetes CronJob in Helm chart)
 * [ ] Change detection
 * [ ] Failure alerting
 
