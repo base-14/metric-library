@@ -45,16 +45,6 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
 
   return (
     <div className="space-y-6">
-      {facets.semconv_matches && Object.keys(facets.semconv_matches).length > 0 && (
-        <FilterSection
-          title="Semantic Convention"
-          items={facets.semconv_matches}
-          selectedValue={selectedFilters.semconv_match}
-          onSelect={(value) => handleFilterClick('semconv_match', value)}
-          labelMap={semconvLabels}
-        />
-      )}
-
       <FilterSection
         title="Source"
         items={facets.source_names}
@@ -89,6 +79,16 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
         selectedValue={selectedFilters.source_category}
         onSelect={(value) => handleFilterClick('source_category', value)}
       />
+
+      {facets.semconv_matches && Object.keys(facets.semconv_matches).length > 0 && (
+        <FilterSection
+          title="Semantic Convention"
+          items={facets.semconv_matches}
+          selectedValue={selectedFilters.semconv_match}
+          onSelect={(value) => handleFilterClick('semconv_match', value)}
+          labelMap={semconvLabels}
+        />
+      )}
     </div>
   );
 }
