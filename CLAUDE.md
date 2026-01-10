@@ -23,9 +23,9 @@
 - use make commands like `make build`, `make run`, `make test`, etc.
 - do not add "Generated with" and "Co-Authored-By" lines to commit messages
 
-## CI 
-- this is a monorepo, use GitHub Actions for CI/CD
-- location of CI configuration files: `../../.github/workflows`
+## CI
+- Use GitHub Actions for CI/CD
+- Location of CI configuration files: `.github/workflows`
 
 ## Golang specific instructions
 
