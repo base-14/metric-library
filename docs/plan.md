@@ -377,9 +377,16 @@ Outcome:
 
 ### Language Instrumentations
 
+#### Python ✅
+* [x] otel-python adapter (AST extraction)
+* [x] 30 metrics extracted from system-metrics, asyncio, celery
+
+#### Java
 * [ ] Java doc-based extraction
-* [ ] Python doc-based extraction
-* [ ] AST extraction (incremental)
+
+#### Other Languages
+* [ ] JS/Node.js instrumentation
+* [ ] .NET instrumentation
 
 ### Databases & Messaging
 

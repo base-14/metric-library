@@ -46,6 +46,7 @@ refresh:
   adapters:
     - otel-collector-contrib
     - otel-semconv
+    - otel-python
     - prometheus-postgres
     - prometheus-node
     - prometheus-redis
