@@ -6,6 +6,50 @@ A metric discovery platform for cataloging and searching OpenTelemetry metrics f
 
 OTel Glossary extracts metric definitions from OpenTelemetry Collector components (receivers, processors, exporters) and other sources, storing them in a searchable catalog. It provides a web interface for discovering metrics by name, type, component, and source.
 
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                           Sources                                    │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌────────────┐  │
+│  │ otel-contrib │ │   postgres   │ │    redis     │ │   kafka    │  │
+│  │   (yaml)     │ │   (go ast)   │ │   (go ast)   │ │  (go ast)  │  │
+│  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘ └─────┬──────┘  │
+└─────────┼────────────────┼────────────────┼───────────────┼─────────┘
+          │                │                │               │
+          ▼                ▼                ▼               ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Adapters                                     │
+│                                                                      │
+│   Each adapter: Fetch (git clone) → Extract (parse) → RawMetric     │
+│                                                                      │
+└─────────────────────────────────┬───────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                       Orchestrator                                   │
+│                                                                      │
+│   RawMetric → CanonicalMetric → Store (SQLite + FTS5)               │
+│                                                                      │
+└─────────────────────────────────┬───────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         REST API                                     │
+│                                                                      │
+│   /api/metrics (search)    /api/facets    /health                   │
+│                                                                      │
+└─────────────────────────────────┬───────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      Next.js Frontend                                │
+│                                                                      │
+│   Search bar, filters, metric cards, detail view                    │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
 ## Tech Stack
 
 | Component | Version |
@@ -113,4 +157,89 @@ otel-glossary/
 |----------|---------|-------------|
 | `PORT` | 8080 | API server port |
 | `DATABASE_PATH` | ./data/glossary.db | SQLite database path |
+| `CACHE_DIR` | ./.cache | Git repository cache directory |
 | `NEXT_PUBLIC_API_URL` | http://localhost:8080 | API URL for frontend |
+
+## Sources
+
+### Available Sources
+
+| Source | Adapter | Extraction | Metrics | Repository |
+|--------|---------|------------|---------|------------|
+| OpenTelemetry Collector Contrib | `otel-collector-contrib` | YAML metadata | ~1200 | [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) |
+| PostgreSQL Exporter | `prometheus-postgres` | Go AST | ~100 | [postgres_exporter](https://github.com/prometheus-community/postgres_exporter) |
+| Node Exporter | `prometheus-node` | Go AST | ~200 | [node_exporter](https://github.com/prometheus/node_exporter) |
+| Redis Exporter | `prometheus-redis` | Go AST | ~350 | [redis_exporter](https://github.com/oliver006/redis_exporter) |
+| MySQL Exporter | `prometheus-mysql` | Go AST | ~220 | [mysqld_exporter](https://github.com/prometheus/mysqld_exporter) |
+| MongoDB Exporter | `prometheus-mongodb` | Go AST | ~10 | [mongodb_exporter](https://github.com/percona/mongodb_exporter) |
+| Kafka Exporter | `prometheus-kafka` | Go AST | ~16 | [kafka_exporter](https://github.com/danielqsj/kafka_exporter) |
+
+### Extract Commands
+
+```bash
+make extract-otel      # OpenTelemetry Collector Contrib
+make extract-postgres  # PostgreSQL Exporter
+make extract-node      # Node Exporter
+make extract-redis     # Redis Exporter
+make extract-mysql     # MySQL Exporter
+make extract-mongodb   # MongoDB Exporter
+make extract-kafka     # Kafka Exporter
+make extract-all       # All sources
+```
+
+### Adding a New Source
+
+1. **Create adapter directory**
+   ```
+   internal/adapter/prometheus/<name>/
+   ```
+
+2. **Implement the Adapter interface** (`adapter.go`)
+   ```go
+   type Adapter interface {
+       Name() string
+       SourceCategory() domain.SourceCategory
+       Confidence() domain.ConfidenceLevel
+       ExtractionMethod() domain.ExtractionMethod
+       RepoURL() string
+       Fetch(ctx context.Context, opts FetchOptions) (*FetchResult, error)
+       Extract(ctx context.Context, result *FetchResult) ([]*RawMetric, error)
+   }
+   ```
+
+3. **Choose extraction method**
+   - **YAML metadata**: For sources with `metadata.yaml` files (like otel-collector-contrib)
+   - **Go AST**: For Prometheus exporters using `prometheus.NewDesc()` - use the shared parser at `internal/adapter/prometheus/astparser`
+   - **Custom AST**: For sources with unique patterns (like redis_exporter's map-based definitions)
+
+4. **Write tests** (`adapter_test.go`)
+
+5. **Register in main.go**
+   ```go
+   case "prometheus-<name>":
+       adp = <name>.NewAdapter(*cacheDir)
+   ```
+
+6. **Add Makefile target**
+   ```makefile
+   extract-<name>: build
+       ./bin/$(BINARY_NAME) extract -adapter prometheus-<name>
+   ```
+
+### RawMetric Structure
+
+Each adapter extracts metrics into this intermediate format:
+
+```go
+type RawMetric struct {
+    Name             string             // Metric name (e.g., "redis_connected_clients")
+    Description      string             // Help text
+    InstrumentType   string             // counter, gauge, histogram, summary
+    Attributes       []domain.Attribute // Labels/dimensions
+    EnabledByDefault bool
+    ComponentType    string             // receiver, processor, exporter, platform
+    ComponentName    string             // e.g., "redis", "pg_stat_database"
+    SourceLocation   string             // File path in source repo
+    Path             string             // Discovery path
+}
+```
