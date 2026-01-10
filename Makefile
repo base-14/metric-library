@@ -1,5 +1,5 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
-	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-all \
+	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all \
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
@@ -54,8 +54,12 @@ extract-ksm: build
 extract-cadvisor: build
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
 
+extract-semconv: build
+	./bin/$(BINARY_NAME) extract -adapter otel-semconv
+
 extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter otel-collector-contrib
+	./bin/$(BINARY_NAME) extract -adapter otel-semconv
 	./bin/$(BINARY_NAME) extract -adapter prometheus-postgres
 	./bin/$(BINARY_NAME) extract -adapter prometheus-node
 	./bin/$(BINARY_NAME) extract -adapter prometheus-redis

@@ -394,9 +394,9 @@ Outcome:
 * [ ] GCP metrics ingestion
 * [ ] Azure metrics ingestion
 
-### Semantic Conventions
+### Semantic Conventions ✅
 
-* [ ] Parse conventions
+* [x] Parse conventions (349 metrics extracted)
 * [ ] Attribute validation logic
 * [ ] Metric enrichment hooks
 

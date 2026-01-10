@@ -167,6 +167,7 @@ otel-glossary/
 | Source | Adapter | Extraction | Metrics | Repository |
 |--------|---------|------------|---------|------------|
 | OpenTelemetry Collector Contrib | `otel-collector-contrib` | YAML metadata | 1261 | [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) |
+| OpenTelemetry Semantic Conventions | `otel-semconv` | YAML metadata | 349 | [semantic-conventions](https://github.com/open-telemetry/semantic-conventions) |
 | PostgreSQL Exporter | `prometheus-postgres` | Go AST | 120 | [postgres_exporter](https://github.com/prometheus-community/postgres_exporter) |
 | Node Exporter | `prometheus-node` | Go AST | 553 | [node_exporter](https://github.com/prometheus/node_exporter) |
 | Redis Exporter | `prometheus-redis` | Go AST | 356 | [redis_exporter](https://github.com/oliver006/redis_exporter) |
@@ -176,12 +177,13 @@ otel-glossary/
 | kube-state-metrics | `kubernetes-ksm` | Go AST | 261 | [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) |
 | cAdvisor | `kubernetes-cadvisor` | Go AST | 107 | [cadvisor](https://github.com/google/cadvisor) |
 
-**Total: 2,904 metrics**
+**Total: 3,253 metrics**
 
 ### Extract Commands
 
 ```bash
 make extract-otel      # OpenTelemetry Collector Contrib
+make extract-semconv   # OpenTelemetry Semantic Conventions
 make extract-postgres  # PostgreSQL Exporter
 make extract-node      # Node Exporter
 make extract-redis     # Redis Exporter
