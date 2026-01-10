@@ -14,6 +14,7 @@ import (
 
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/cadvisor"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
+	"github.com/base-14/metric-library/internal/adapter/otel/java"
 	"github.com/base-14/metric-library/internal/adapter/otel/python"
 	"github.com/base-14/metric-library/internal/adapter/otel/semconv"
 	"github.com/base-14/metric-library/internal/adapter/otelcontrib"
@@ -171,6 +172,8 @@ func runExtract(args []string) error {
 		adp = semconv.NewAdapter(*cacheDir)
 	case "otel-python":
 		adp = python.NewAdapter(*cacheDir)
+	case "otel-java":
+		adp = java.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}

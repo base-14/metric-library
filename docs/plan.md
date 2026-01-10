@@ -381,8 +381,9 @@ Outcome:
 * [x] otel-python adapter (AST extraction)
 * [x] 30 metrics extracted from system-metrics, asyncio, celery
 
-#### Java
-* [ ] Java doc-based extraction
+#### Java ✅
+* [x] otel-java adapter (regex-based extraction)
+* [x] 50 metrics extracted from runtime-telemetry, http-semconv, db-semconv, messaging-semconv, rpc-semconv, oshi, failsafe
 
 #### Other Languages
 * [ ] JS/Node.js instrumentation

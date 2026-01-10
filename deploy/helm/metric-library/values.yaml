@@ -47,6 +47,7 @@ refresh:
     - otel-collector-contrib
     - otel-semconv
     - otel-python
+    - otel-java
     - prometheus-postgres
     - prometheus-node
     - prometheus-redis
