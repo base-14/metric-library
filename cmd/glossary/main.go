@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,7 +12,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/base14/otel-glossary/internal/adapter/otelcontrib"
 	"github.com/base14/otel-glossary/internal/api"
+	"github.com/base14/otel-glossary/internal/orchestrator"
 	"github.com/base14/otel-glossary/internal/store"
 )
 
@@ -23,6 +26,21 @@ func main() {
 }
 
 func run() error {
+	if len(os.Args) < 2 {
+		return runServe()
+	}
+
+	switch os.Args[1] {
+	case "serve":
+		return runServe()
+	case "extract":
+		return runExtract(os.Args[2:])
+	default:
+		return runServe()
+	}
+}
+
+func runServe() error {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -77,5 +95,74 @@ func run() error {
 
 	<-done
 	log.Println("Server stopped")
+	return nil
+}
+
+func runExtract(args []string) error {
+	fs := flag.NewFlagSet("extract", flag.ExitOnError)
+	adapterName := fs.String("adapter", "otel-collector-contrib", "Adapter to use for extraction")
+	cacheDir := fs.String("cache-dir", "", "Directory to cache git repositories")
+	force := fs.Bool("force", false, "Force re-fetch even if cached")
+	dbPath := fs.String("db", "", "Database path (default: $DATABASE_PATH or ./data/glossary.db)")
+
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+
+	if *dbPath == "" {
+		*dbPath = os.Getenv("DATABASE_PATH")
+		if *dbPath == "" {
+			*dbPath = "./data/glossary.db"
+		}
+	}
+
+	if *cacheDir == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return fmt.Errorf("failed to get home directory: %w", err)
+		}
+		*cacheDir = filepath.Join(home, ".cache", "otel-glossary")
+	}
+
+	if err := os.MkdirAll(filepath.Dir(*dbPath), 0750); err != nil {
+		return fmt.Errorf("failed to create data directory: %w", err)
+	}
+
+	log.Printf("Connecting to database at %s", *dbPath)
+	s, err := store.NewSQLiteStoreWithMigrations(*dbPath)
+	if err != nil {
+		return fmt.Errorf("failed to initialize store: %w", err)
+	}
+	defer func() { _ = s.Close() }()
+
+	var adp orchestrator.Adapter
+	switch *adapterName {
+	case "otel-collector-contrib":
+		adp = otelcontrib.NewAdapter(*cacheDir)
+	default:
+		return fmt.Errorf("unknown adapter: %s", *adapterName)
+	}
+
+	log.Printf("Starting extraction with adapter: %s", adp.Name())
+	log.Printf("Cache directory: %s", *cacheDir)
+
+	ext := orchestrator.NewExtractor(adp, s)
+	ctx := context.Background()
+
+	result, err := ext.Run(ctx, orchestrator.Options{
+		CacheDir: *cacheDir,
+		Force:    *force,
+	})
+	if err != nil {
+		return fmt.Errorf("extraction failed: %w", err)
+	}
+
+	log.Printf("Extraction completed successfully")
+	log.Printf("  Adapter: %s", result.AdapterName)
+	log.Printf("  Commit: %s", result.Commit)
+	log.Printf("  Metrics extracted: %d", result.MetricsExtracted)
+	log.Printf("  Metrics stored: %d", result.MetricsStored)
+	log.Printf("  Duration: %s", result.Duration)
+
 	return nil
 }
