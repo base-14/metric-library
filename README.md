@@ -9,45 +9,45 @@ OTel Glossary extracts metric definitions from OpenTelemetry Collector component
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                           Sources                                    │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌────────────┐  │
-│  │ otel-contrib │ │   postgres   │ │    redis     │ │   kafka    │  │
-│  │   (yaml)     │ │   (go ast)   │ │   (go ast)   │ │  (go ast)  │  │
-│  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘ └─────┬──────┘  │
-└─────────┼────────────────┼────────────────┼───────────────┼─────────┘
-          │                │                │               │
-          ▼                ▼                ▼               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Adapters                                     │
-│                                                                      │
-│   Each adapter: Fetch (git clone) → Extract (parse) → RawMetric     │
-│                                                                      │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                       Orchestrator                                   │
-│                                                                      │
-│   RawMetric → CanonicalMetric → Store (SQLite + FTS5)               │
-│                                                                      │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         REST API                                     │
-│                                                                      │
-│   /api/metrics (search)    /api/facets    /health                   │
-│                                                                      │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      Next.js Frontend                                │
-│                                                                      │
-│   Search bar, filters, metric cards, detail view                    │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              Sources                                         │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ │
+│  │otel-contrib│ │  postgres  │ │   redis    │ │    ksm     │ │  cadvisor  │ │
+│  │   (yaml)   │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │
+│  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ │
+└────────┼──────────────┼──────────────┼──────────────┼──────────────┼────────┘
+         │              │              │              │              │
+         ▼              ▼              ▼              ▼              ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              Adapters                                        │
+│                                                                              │
+│    Each adapter: Fetch (git clone) → Extract (parse) → RawMetric            │
+│                                                                              │
+└─────────────────────────────────────┬───────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            Orchestrator                                      │
+│                                                                              │
+│    RawMetric → CanonicalMetric → Store (SQLite + FTS5)                      │
+│                                                                              │
+└─────────────────────────────────────┬───────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              REST API                                        │
+│                                                                              │
+│    /api/metrics (search)    /api/facets    /health                          │
+│                                                                              │
+└─────────────────────────────────────┬───────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Next.js Frontend                                   │
+│                                                                              │
+│    Search bar, filters, metric cards, detail view                           │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Tech Stack
@@ -166,15 +166,17 @@ otel-glossary/
 
 | Source | Adapter | Extraction | Metrics | Repository |
 |--------|---------|------------|---------|------------|
-| OpenTelemetry Collector Contrib | `otel-collector-contrib` | YAML metadata | ~1200 | [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) |
-| PostgreSQL Exporter | `prometheus-postgres` | Go AST | ~100 | [postgres_exporter](https://github.com/prometheus-community/postgres_exporter) |
-| Node Exporter | `prometheus-node` | Go AST | ~200 | [node_exporter](https://github.com/prometheus/node_exporter) |
-| Redis Exporter | `prometheus-redis` | Go AST | ~350 | [redis_exporter](https://github.com/oliver006/redis_exporter) |
-| MySQL Exporter | `prometheus-mysql` | Go AST | ~220 | [mysqld_exporter](https://github.com/prometheus/mysqld_exporter) |
-| MongoDB Exporter | `prometheus-mongodb` | Go AST | ~10 | [mongodb_exporter](https://github.com/percona/mongodb_exporter) |
-| Kafka Exporter | `prometheus-kafka` | Go AST | ~16 | [kafka_exporter](https://github.com/danielqsj/kafka_exporter) |
-| kube-state-metrics | `kubernetes-ksm` | Go AST | ~260 | [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) |
-| cAdvisor | `kubernetes-cadvisor` | Go AST | ~107 | [cadvisor](https://github.com/google/cadvisor) |
+| OpenTelemetry Collector Contrib | `otel-collector-contrib` | YAML metadata | 1261 | [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) |
+| PostgreSQL Exporter | `prometheus-postgres` | Go AST | 120 | [postgres_exporter](https://github.com/prometheus-community/postgres_exporter) |
+| Node Exporter | `prometheus-node` | Go AST | 553 | [node_exporter](https://github.com/prometheus/node_exporter) |
+| Redis Exporter | `prometheus-redis` | Go AST | 356 | [redis_exporter](https://github.com/oliver006/redis_exporter) |
+| MySQL Exporter | `prometheus-mysql` | Go AST | 222 | [mysqld_exporter](https://github.com/prometheus/mysqld_exporter) |
+| MongoDB Exporter | `prometheus-mongodb` | Go AST | 8 | [mongodb_exporter](https://github.com/percona/mongodb_exporter) |
+| Kafka Exporter | `prometheus-kafka` | Go AST | 16 | [kafka_exporter](https://github.com/danielqsj/kafka_exporter) |
+| kube-state-metrics | `kubernetes-ksm` | Go AST | 261 | [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) |
+| cAdvisor | `kubernetes-cadvisor` | Go AST | 107 | [cadvisor](https://github.com/google/cadvisor) |
+
+**Total: 2,904 metrics**
 
 ### Extract Commands
 
