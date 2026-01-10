@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+coverage.out
+coverage.html
+
+# Data files (will be mounted as volume)
+data/
+*.db
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Documentation
+*.md
+!README.md
+
+# Web directory (built separately)
+web/
+
+# CI/CD
+.github/
+
+# Claude
+.claude/

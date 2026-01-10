@@ -1,4 +1,4 @@
-.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web
+.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs
 
 # Binary name
 BINARY_NAME=glossary
@@ -12,6 +12,7 @@ GOMOD=$(GOCMD) mod
 
 # Database
 DATABASE_URL?=sqlite:./data/glossary.db
+MIGRATIONS_DIR=./internal/store/migrations
 
 # Build the application
 build:
@@ -44,20 +45,20 @@ tidy:
 
 # Run database migrations
 migrate:
-	DATABASE_URL=$(DATABASE_URL) dbmate up
+	DATABASE_URL=$(DATABASE_URL) dbmate -d $(MIGRATIONS_DIR) up
 
 # Rollback last migration
 migrate-down:
-	DATABASE_URL=$(DATABASE_URL) dbmate down
+	DATABASE_URL=$(DATABASE_URL) dbmate -d $(MIGRATIONS_DIR) down
 
 # Create a new migration
 migrate-new:
 	@read -p "Migration name: " name; \
-	DATABASE_URL=$(DATABASE_URL) dbmate new $$name
+	DATABASE_URL=$(DATABASE_URL) dbmate -d $(MIGRATIONS_DIR) new $$name
 
 # Show migration status
 migrate-status:
-	DATABASE_URL=$(DATABASE_URL) dbmate status
+	DATABASE_URL=$(DATABASE_URL) dbmate -d $(MIGRATIONS_DIR) status
 
 # Clean build artifacts
 clean:
@@ -79,6 +80,19 @@ ci-web:
 	cd web && npm ci && npm run lint && npm test && npm run build
 
 ci: ci-go ci-web
+
+# Docker targets
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up -d
+
+docker-down:
+	docker compose down
+
+docker-logs:
+	docker compose logs -f
 
 # Default target
 all: check build
