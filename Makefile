@@ -3,7 +3,7 @@
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
-BINARY_NAME=glossary
+BINARY_NAME=metric-library
 
 # Go parameters
 GOCMD=go
@@ -13,7 +13,7 @@ GOFMT=$(GOCMD) fmt
 GOMOD=$(GOCMD) mod
 
 # Database
-DATABASE_URL?=sqlite:./data/glossary.db
+DATABASE_URL?=sqlite:./data/metric-library.db
 MIGRATIONS_DIR=./internal/store/migrations
 
 # Build the application

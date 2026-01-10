@@ -60,7 +60,7 @@ func runServe() error {
 
 	dbPath := os.Getenv("DATABASE_PATH")
 	if dbPath == "" {
-		dbPath = "./data/glossary.db"
+		dbPath = "./data/metric-library.db"
 	}
 
 	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
@@ -115,7 +115,7 @@ func runExtract(args []string) error {
 	adapterName := fs.String("adapter", "otel-collector-contrib", "Adapter to use for extraction")
 	cacheDir := fs.String("cache-dir", "", "Directory to cache git repositories")
 	force := fs.Bool("force", false, "Force re-fetch even if cached")
-	dbPath := fs.String("db", "", "Database path (default: $DATABASE_PATH or ./data/glossary.db)")
+	dbPath := fs.String("db", "", "Database path (default: $DATABASE_PATH or ./data/metric-library.db)")
 
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -124,7 +124,7 @@ func runExtract(args []string) error {
 	if *dbPath == "" {
 		*dbPath = os.Getenv("DATABASE_PATH")
 		if *dbPath == "" {
-			*dbPath = "./data/glossary.db"
+			*dbPath = "./data/metric-library.db"
 		}
 	}
 
@@ -198,7 +198,7 @@ func runExtract(args []string) error {
 
 func runEnrich(args []string) error {
 	fs := flag.NewFlagSet("enrich", flag.ExitOnError)
-	dbPath := fs.String("db", "", "Database path (default: $DATABASE_PATH or ./data/glossary.db)")
+	dbPath := fs.String("db", "", "Database path (default: $DATABASE_PATH or ./data/metric-library.db)")
 
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -207,7 +207,7 @@ func runEnrich(args []string) error {
 	if *dbPath == "" {
 		*dbPath = os.Getenv("DATABASE_PATH")
 		if *dbPath == "" {
-			*dbPath = "./data/glossary.db"
+			*dbPath = "./data/metric-library.db"
 		}
 	}
 

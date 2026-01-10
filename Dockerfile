@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build with CGO enabled and FTS5 support
-RUN CGO_ENABLED=1 go build -tags "fts5" -o bin/glossary ./cmd/glossary
+RUN CGO_ENABLED=1 go build -tags "fts5" -o bin/metric-library ./cmd/glossary
 
 # Runtime stage
 FROM alpine:3.19
@@ -25,15 +25,15 @@ RUN apk add --no-cache ca-certificates sqlite-libs
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/bin/glossary .
+COPY --from=builder /app/bin/metric-library .
 
 # Create data directory
 RUN mkdir -p /app/data
 
 # Environment variables
 ENV PORT=8080
-ENV DATABASE_PATH=/app/data/glossary.db
+ENV DATABASE_PATH=/app/data/metric-library.db
 
 EXPOSE 8080
 
-CMD ["./glossary"]
+CMD ["./metric-library"]

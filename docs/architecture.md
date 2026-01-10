@@ -604,10 +604,10 @@ make migrate  # Run migrations
 
 Environment variables:
 ```
-GLOSSARY_DB_PATH=./data/glossary.db
-GLOSSARY_CACHE_DIR=./cache
-GLOSSARY_PORT=8080
-GLOSSARY_LOG_LEVEL=info
+DATABASE_PATH=./data/metric-library.db
+CACHE_DIR=./cache
+PORT=8080
+LOG_LEVEL=info
 ```
 
 ### 11.3 Automation

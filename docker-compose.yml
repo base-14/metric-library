@@ -1,5 +1,8 @@
+name: metric-library
+
 services:
   api:
+    container_name: metric-library-api
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,7 +12,7 @@ services:
       - ./data:/app/data
     environment:
       - PORT=8080
-      - DATABASE_PATH=/app/data/glossary.db
+      - DATABASE_PATH=/app/data/metric-library.db
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
       interval: 10s
@@ -17,6 +20,7 @@ services:
       retries: 3
 
   web:
+    container_name: metric-library-web
     build:
       context: ./web
       dockerfile: Dockerfile

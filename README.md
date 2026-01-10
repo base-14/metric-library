@@ -168,7 +168,7 @@ metric-library/
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | 8080 | API server port |
-| `DATABASE_PATH` | ./data/glossary.db | SQLite database path |
+| `DATABASE_PATH` | ./data/metric-library.db | SQLite database path |
 | `CACHE_DIR` | ./.cache | Git repository cache directory |
 | `NEXT_PUBLIC_API_URL` | http://localhost:8080 | API URL for frontend |
 
