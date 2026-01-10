@@ -1,5 +1,6 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
 	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all enrich \
+	extract-otel-python extract-otel-java extract-otel-js extract-openllmetry extract-openlit \
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
@@ -57,9 +58,27 @@ extract-cadvisor: build
 extract-semconv: build
 	./bin/$(BINARY_NAME) extract -adapter otel-semconv
 
+extract-otel-python: build
+	./bin/$(BINARY_NAME) extract -adapter otel-python
+
+extract-otel-java: build
+	./bin/$(BINARY_NAME) extract -adapter otel-java
+
+extract-otel-js: build
+	./bin/$(BINARY_NAME) extract -adapter otel-js
+
+extract-openllmetry: build
+	./bin/$(BINARY_NAME) extract -adapter openllmetry
+
+extract-openlit: build
+	./bin/$(BINARY_NAME) extract -adapter openlit
+
 extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter otel-collector-contrib
 	./bin/$(BINARY_NAME) extract -adapter otel-semconv
+	./bin/$(BINARY_NAME) extract -adapter otel-python
+	./bin/$(BINARY_NAME) extract -adapter otel-java
+	./bin/$(BINARY_NAME) extract -adapter otel-js
 	./bin/$(BINARY_NAME) extract -adapter prometheus-postgres
 	./bin/$(BINARY_NAME) extract -adapter prometheus-node
 	./bin/$(BINARY_NAME) extract -adapter prometheus-redis
@@ -68,6 +87,8 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
+	./bin/$(BINARY_NAME) extract -adapter openllmetry
+	./bin/$(BINARY_NAME) extract -adapter openlit
 
 # Enrich metrics with semconv data
 enrich: build

@@ -385,9 +385,23 @@ Outcome:
 * [x] otel-java adapter (regex-based extraction)
 * [x] 50 metrics extracted from runtime-telemetry, http-semconv, db-semconv, messaging-semconv, rpc-semconv, oshi, failsafe
 
+#### JavaScript ✅
+* [x] otel-js adapter (TypeScript parsing)
+* [x] 35 metrics extracted from host-metrics, runtime-node, openai instrumentation
+
 #### Other Languages
-* [ ] JS/Node.js instrumentation
+* [ ] Android instrumentation
 * [ ] .NET instrumentation
+
+### LLM Observability Sources ✅
+
+#### OpenLLMetry ✅
+* [x] openllmetry adapter (Python AST extraction)
+* [x] 30 metrics extracted (gen_ai.client.*, guardrails, db.pinecone.*, db.client.*)
+
+#### OpenLIT ✅
+* [x] openlit adapter (Python AST with constant resolution)
+* [x] 21 metrics extracted (GenAI, DB, MCP protocol)
 
 ### Databases & Messaging
 

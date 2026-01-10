@@ -1,4 +1,13 @@
 
+## PROJECT CONVENTIONS
+
+- **Git repo cache**: All cloned repositories go in `./.cache` directory (NOT /tmp)
+  - Example: `.cache/github.com/open-telemetry/opentelemetry-android`
+  - The GitFetcher handles this automatically when using adapters
+  - For manual exploration, clone to `.cache/` subdirectory
+- **Database**: SQLite at `./data/metric-library.db`
+- **Binary**: `./bin/metric-library`
+
 ## WAY OF WORKING
 
 - Start with minimal functionality and verify it works before adding complexity

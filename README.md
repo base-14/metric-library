@@ -9,13 +9,18 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              Sources                                        │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ │
-│  │otel-contrib│ │  postgres  │ │   redis    │ │    ksm     │ │  cadvisor  │ │
-│  │   (yaml)   │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │
-│  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ │
-└────────┼──────────────┼──────────────┼──────────────┼──────────────┼────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│                                     Sources                                           │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐           │
+│  │otel-contrib│ │  postgres  │ │   redis    │ │    ksm     │ │  cadvisor  │    ...    │
+│  │   (yaml)   │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │           │
+│  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘           │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐           │
+│  │otel-python │ │ otel-java  │ │  otel-js   │ │openllmetry │ │  openlit   │           │
+│  │ (py ast)   │ │  (regex)   │ │ (ts parse) │ │ (py ast)   │ │ (py ast)   │           │
+│  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘           │
+│                                                                  15 adapters total    │
+└────────┼──────────────┼──────────────┼──────────────┼────────────────────────────────┘
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -180,6 +185,9 @@ metric-library/
 |--------|---------|------------|---------|------------|
 | OpenTelemetry Collector Contrib | `otel-collector-contrib` | YAML metadata | 1261 | [otel-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) |
 | OpenTelemetry Semantic Conventions | `otel-semconv` | YAML metadata | 349 | [semantic-conventions](https://github.com/open-telemetry/semantic-conventions) |
+| OpenTelemetry Python | `otel-python` | Python AST | 30 | [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib) |
+| OpenTelemetry Java | `otel-java` | Regex | 50 | [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation) |
+| OpenTelemetry JS | `otel-js` | TS Parse | 35 | [opentelemetry-js-contrib](https://github.com/open-telemetry/opentelemetry-js-contrib) |
 | PostgreSQL Exporter | `prometheus-postgres` | Go AST | 120 | [postgres_exporter](https://github.com/prometheus-community/postgres_exporter) |
 | Node Exporter | `prometheus-node` | Go AST | 553 | [node_exporter](https://github.com/prometheus/node_exporter) |
 | Redis Exporter | `prometheus-redis` | Go AST | 356 | [redis_exporter](https://github.com/oliver006/redis_exporter) |
@@ -188,23 +196,30 @@ metric-library/
 | Kafka Exporter | `prometheus-kafka` | Go AST | 16 | [kafka_exporter](https://github.com/danielqsj/kafka_exporter) |
 | kube-state-metrics | `kubernetes-ksm` | Go AST | 261 | [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) |
 | cAdvisor | `kubernetes-cadvisor` | Go AST | 107 | [cadvisor](https://github.com/google/cadvisor) |
+| OpenLLMetry | `openllmetry` | Python AST | 30 | [openllmetry](https://github.com/traceloop/openllmetry) |
+| OpenLIT | `openlit` | Python AST | 21 | [openlit](https://github.com/openlit/openlit) |
 
-**Total: 3,253 metrics**
+**Total: 3,419 metrics**
 
 ### Extract Commands
 
 ```bash
-make extract-otel      # OpenTelemetry Collector Contrib
-make extract-semconv   # OpenTelemetry Semantic Conventions
-make extract-postgres  # PostgreSQL Exporter
-make extract-node      # Node Exporter
-make extract-redis     # Redis Exporter
-make extract-mysql     # MySQL Exporter
-make extract-mongodb   # MongoDB Exporter
-make extract-kafka     # Kafka Exporter
-make extract-ksm       # kube-state-metrics
-make extract-cadvisor  # cAdvisor
-make extract-all       # All sources
+make extract-otel         # OpenTelemetry Collector Contrib
+make extract-semconv      # OpenTelemetry Semantic Conventions
+make extract-otel-python  # OpenTelemetry Python
+make extract-otel-java    # OpenTelemetry Java
+make extract-otel-js      # OpenTelemetry JS
+make extract-postgres     # PostgreSQL Exporter
+make extract-node         # Node Exporter
+make extract-redis        # Redis Exporter
+make extract-mysql        # MySQL Exporter
+make extract-mongodb      # MongoDB Exporter
+make extract-kafka        # Kafka Exporter
+make extract-ksm          # kube-state-metrics
+make extract-cadvisor     # cAdvisor
+make extract-openllmetry  # OpenLLMetry (LLM observability)
+make extract-openlit      # OpenLIT (LLM observability)
+make extract-all          # All sources
 ```
 
 ### Semantic Conventions Enrichment

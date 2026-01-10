@@ -14,7 +14,10 @@ import (
 
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/cadvisor"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
+	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
+	"github.com/base-14/metric-library/internal/adapter/llm/openllmetry"
 	"github.com/base-14/metric-library/internal/adapter/otel/java"
+	"github.com/base-14/metric-library/internal/adapter/otel/js"
 	"github.com/base-14/metric-library/internal/adapter/otel/python"
 	"github.com/base-14/metric-library/internal/adapter/otel/semconv"
 	"github.com/base-14/metric-library/internal/adapter/otelcontrib"
@@ -174,6 +177,12 @@ func runExtract(args []string) error {
 		adp = python.NewAdapter(*cacheDir)
 	case "otel-java":
 		adp = java.NewAdapter(*cacheDir)
+	case "otel-js":
+		adp = js.NewAdapter(*cacheDir)
+	case "openllmetry":
+		adp = openllmetry.NewAdapter(*cacheDir)
+	case "openlit":
+		adp = openlit.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}

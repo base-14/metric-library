@@ -28,6 +28,7 @@ function HomeContent() {
   const [facets, setFacets] = useState<FacetResponse | null>(null);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<CanonicalMetric | null>(null);
 
@@ -133,10 +134,19 @@ function HomeContent() {
     updateUrl(searchParams, null);
   }, [searchParams, updateUrl]);
 
-  const handleLoadMore = () => {
-    const newOffset = (searchParams.offset || 0) + (searchParams.limit || 20);
-    const newParams = { ...searchParams, offset: newOffset };
-    updateUrl(newParams, urlSearchParams.get('metric'));
+  const handleLoadMore = async () => {
+    setLoadingMore(true);
+    try {
+      const response = await searchMetrics({
+        ...searchParams,
+        offset: metrics.length,
+      });
+      setMetrics(prev => [...prev, ...response.metrics]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load more metrics');
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   const selectedFilters = {
@@ -251,9 +261,10 @@ function HomeContent() {
               <div className="mt-6 text-center">
                 <button
                   onClick={handleLoadMore}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={loadingMore}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Load More
+                  {loadingMore ? 'Loading...' : 'Load More'}
                 </button>
               </div>
             )}
