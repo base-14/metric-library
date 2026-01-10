@@ -39,18 +39,21 @@ make docker-up
 ```bash
 # Build
 make build            # Build Go binary
-cd web && make build  # Build frontend
+make web-build        # Build frontend
+make build-all        # Build both
 
 # Extract metrics
 make extract          # Extract metrics from otel-collector-contrib
 
 # Test
 make test             # Run Go tests
-cd web && make test   # Run frontend tests
+make web-test         # Run frontend tests
+make test-all         # Run all tests
 
 # Lint
 make lint             # Run golangci-lint
-cd web && make lint   # Run ESLint
+make web-lint         # Run ESLint
+make lint-all         # Run all linters
 
 # CI (runs everything)
 make ci               # Full CI: lint, test, build (Go + Web)
