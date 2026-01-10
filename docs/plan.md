@@ -349,9 +349,9 @@ Outcome:
 * [x] Tailwind CSS configuration
 * [x] API client for backend integration
 * [x] Layout and navigation
-* [ ] Search bar with debounced input (search as you type)
+* [x] Search bar with debounced input (search as you type)
 * [x] Filter sidebar (metric type, component type, source category)
-* [ ] Reorder filters: Component Name first, Instrument Type second
+* [x] Reorder filters: Component Name first, Instrument Type second
 * [x] Facet counts in filter options
 * [ ] Active filters display with clear buttons
 * [x] Metric card component with type badges
