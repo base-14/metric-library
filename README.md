@@ -173,6 +173,8 @@ otel-glossary/
 | MySQL Exporter | `prometheus-mysql` | Go AST | ~220 | [mysqld_exporter](https://github.com/prometheus/mysqld_exporter) |
 | MongoDB Exporter | `prometheus-mongodb` | Go AST | ~10 | [mongodb_exporter](https://github.com/percona/mongodb_exporter) |
 | Kafka Exporter | `prometheus-kafka` | Go AST | ~16 | [kafka_exporter](https://github.com/danielqsj/kafka_exporter) |
+| kube-state-metrics | `kubernetes-ksm` | Go AST | ~260 | [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) |
+| cAdvisor | `kubernetes-cadvisor` | Go AST | ~107 | [cadvisor](https://github.com/google/cadvisor) |
 
 ### Extract Commands
 
@@ -184,6 +186,8 @@ make extract-redis     # Redis Exporter
 make extract-mysql     # MySQL Exporter
 make extract-mongodb   # MongoDB Exporter
 make extract-kafka     # Kafka Exporter
+make extract-ksm       # kube-state-metrics
+make extract-cadvisor  # cAdvisor
 make extract-all       # All sources
 ```
 

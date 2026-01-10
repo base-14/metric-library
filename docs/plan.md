@@ -293,7 +293,6 @@ Outcome:
 * [x] Filter by source category (otel, prometheus, kubernetes, cloud, vendor)
 * [x] Filter by source name
 * [x] Filter by confidence level (authoritative, derived, documented, vendor_claimed)
-* [ ] Filter by unit
 * [ ] Filter by attribute name
 * [x] Combined filters (AND logic)
 * [x] Pagination support
@@ -354,15 +353,26 @@ Outcome:
 * [x] Registered in main.go
 * [x] Extracted 553 metrics
 
-#### Future Exporters
-* [ ] redis_exporter
-* [ ] mysql_exporter
-* [ ] kafka_exporter
+#### redis_exporter ✅
+* [x] Custom AST parser for map-based metric definitions
+* [x] Extracted 356 metrics
 
-### Kubernetes Metrics
+#### mysql_exporter ✅
+* [x] Adapter using shared AST parser
+* [x] Extracted 222 metrics
 
-* [ ] kube-state-metrics adapter
-* [ ] cAdvisor adapter
+#### mongodb_exporter ✅
+* [x] Adapter created (most metrics are dynamic)
+* [x] Extracted 8 static metrics
+
+#### kafka_exporter ✅
+* [x] Adapter parsing root-level Go files
+* [x] Extracted 16 metrics
+
+### Kubernetes Metrics ✅
+
+* [x] kube-state-metrics adapter (261 metrics extracted)
+* [x] cAdvisor adapter (107 metrics extracted)
 * [ ] Metric categorization by object type
 
 ### Language Instrumentations

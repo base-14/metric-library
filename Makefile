@@ -1,5 +1,5 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
-	extract extract-otel extract-postgres extract-node extract-redis extract-all \
+	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-all \
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
@@ -48,6 +48,12 @@ extract-mongodb: build
 extract-kafka: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
 
+extract-ksm: build
+	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
+
+extract-cadvisor: build
+	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
+
 extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter otel-collector-contrib
 	./bin/$(BINARY_NAME) extract -adapter prometheus-postgres
@@ -56,6 +62,8 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-mysql
 	./bin/$(BINARY_NAME) extract -adapter prometheus-mongodb
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
+	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
+	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
 
 # Run tests
 test:

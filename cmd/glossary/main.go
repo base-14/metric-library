@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/base14/otel-glossary/internal/adapter/kubernetes/cadvisor"
+	"github.com/base14/otel-glossary/internal/adapter/kubernetes/ksm"
 	"github.com/base14/otel-glossary/internal/adapter/otelcontrib"
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/kafka"
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/mongodb"
@@ -156,6 +158,10 @@ func runExtract(args []string) error {
 		adp = mongodb.NewAdapter(*cacheDir)
 	case "prometheus-kafka":
 		adp = kafka.NewAdapter(*cacheDir)
+	case "kubernetes-ksm":
+		adp = ksm.NewAdapter(*cacheDir)
+	case "kubernetes-cadvisor":
+		adp = cadvisor.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}
