@@ -301,10 +301,55 @@ Outcome:
 
 ### Prometheus Exporters
 
-* [ ] Exporter adapter
-* [ ] AST extraction
-* [ ] README enrichment
-* [ ] Confidence tagging
+#### postgres_exporter (Current)
+
+**Repository:** https://github.com/prometheus-community/postgres_exporter
+
+**Approach:** Go AST parsing to extract `prometheus.NewDesc()` calls from `/collector/*.go`
+
+**Files to Create:**
+
+1. `internal/adapter/prometheus/postgres/adapter.go`
+   - Implements `adapter.Adapter` interface
+   - Name: "prometheus-postgres"
+   - SourceCategory: prometheus
+   - ExtractionMethod: ast
+
+2. `internal/adapter/prometheus/astparser/parser.go`
+   - Reusable Go AST parser for Prometheus metrics
+   - Extracts: metric name, description, labels
+   - Handles `prometheus.BuildFQName()` pattern
+
+3. Tests for both packages
+
+**Metric Mapping:**
+
+| postgres_exporter | CanonicalMetric |
+|-------------------|-----------------|
+| Metric name | MetricName |
+| Help text | Description |
+| Variable labels | Attributes |
+| Collector file | ComponentName |
+| - | ComponentType: platform |
+| - | SourceCategory: prometheus |
+
+**Instrument Type Inference:**
+- `*_total` → counter
+- `*_seconds`, `*_bytes`, `*_info` → gauge
+- Default → gauge
+
+**To-Do:**
+* [x] Create AST parser for prometheus.NewDesc()
+* [x] Create postgres adapter
+* [x] Register in main.go
+* [x] Write tests
+* [x] Extract and verify metrics (120 metrics extracted)
+
+#### Future Exporters
+* [ ] node_exporter
+* [ ] redis_exporter
+* [ ] mysql_exporter
+* [ ] kafka_exporter
 
 ### Kubernetes Metrics
 
@@ -343,7 +388,7 @@ Outcome:
 * [ ] Change detection
 * [ ] Failure alerting
 
-### UI (Next.js + React + Tailwind)
+### UI (Next.js + React + Tailwind) ✅
 
 * [x] Next.js project setup with TypeScript
 * [x] Tailwind CSS configuration
@@ -353,17 +398,18 @@ Outcome:
 * [x] Filter sidebar (metric type, component type, source category)
 * [x] Reorder filters: Component Name first, Instrument Type second
 * [x] Facet counts in filter options
-* [ ] Active filters display with clear buttons
+* [x] Active filters display with clear buttons
 * [x] Metric card component with type badges
 * [x] Metric list with responsive grid layout
 * [x] Metric detail panel (slide-out or dedicated page)
 * [x] Attribute display with enum values
-* [ ] Copy-to-clipboard for metric names
+* [x] Copy-to-clipboard for metric names
 * [x] Pagination
 * [x] Empty state and loading states
-* [ ] GitHub source link for each metric
-* [ ] Mobile responsive design
-* [ ] Dark mode support (optional)
+* [x] GitHub source link for each metric
+* [x] Mobile responsive design
+* [x] Dark mode support with theme toggle
+* [x] Inter + Roboto Mono fonts
 
 ### DevOps ✅
 
