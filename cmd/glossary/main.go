@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/base14/otel-glossary/internal/adapter/otelcontrib"
+	"github.com/base14/otel-glossary/internal/adapter/prometheus/node"
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/postgres"
 	"github.com/base14/otel-glossary/internal/api"
 	"github.com/base14/otel-glossary/internal/orchestrator"
@@ -142,6 +143,8 @@ func runExtract(args []string) error {
 		adp = otelcontrib.NewAdapter(*cacheDir)
 	case "prometheus-postgres":
 		adp = postgres.NewAdapter(*cacheDir)
+	case "prometheus-node":
+		adp = node.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}

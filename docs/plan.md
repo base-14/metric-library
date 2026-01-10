@@ -345,8 +345,16 @@ Outcome:
 * [x] Write tests
 * [x] Extract and verify metrics (120 metrics extracted)
 
+#### node_exporter ✅
+
+**Repository:** https://github.com/prometheus/node_exporter
+
+* [x] Adapter created
+* [x] Tests written (81% coverage)
+* [x] Registered in main.go
+* [x] Extracted 553 metrics
+
 #### Future Exporters
-* [ ] node_exporter
 * [ ] redis_exporter
 * [ ] mysql_exporter
 * [ ] kafka_exporter
