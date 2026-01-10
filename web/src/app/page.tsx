@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { SearchBar } from '@/components/SearchBar';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -20,7 +20,7 @@ const FILTER_KEYS = [
   'semconv_match',
 ] as const;
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
   const urlSearchParams = useSearchParams();
 
@@ -171,19 +171,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-mono">metric-library</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Metric discovery platform
-            </p>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
-
+    <>
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-6">
           <SearchBar onSearch={handleSearch} initialValue={searchParams.q} />
@@ -285,6 +273,54 @@ export default function Home() {
           onClose={handleMetricClose}
         />
       )}
+    </>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <main className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mb-6">
+        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+      </div>
+      <div className="flex flex-col lg:flex-row gap-8">
+        <aside className="w-full lg:w-64 flex-shrink-0">
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        </aside>
+        <div className="flex-1">
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-mono">metric-library</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Metric discovery platform
+            </p>
+          </div>
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <Suspense fallback={<LoadingFallback />}>
+        <HomeContent />
+      </Suspense>
     </div>
   );
 }
