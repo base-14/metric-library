@@ -1,4 +1,5 @@
-.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs extract
+.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs extract \
+	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
 BINARY_NAME=glossary
@@ -38,6 +39,23 @@ test-coverage:
 # Run linter
 lint:
 	golangci-lint run ./...
+
+# Web targets
+web-build:
+	cd web && npm run build
+
+web-test:
+	cd web && npm test
+
+web-lint:
+	cd web && npm run lint
+
+# Combined targets
+build-all: build web-build
+
+test-all: test web-test
+
+lint-all: lint web-lint
 
 # Format code
 fmt:
