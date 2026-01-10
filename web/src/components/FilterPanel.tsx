@@ -7,6 +7,7 @@ interface FilterPanelProps {
   selectedFilters: {
     instrument_type?: string;
     component_type?: string;
+    component_name?: string;
     source_category?: string;
   };
   onFilterChange: (key: string, value: string | undefined) => void;
@@ -36,6 +37,13 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
 
   return (
     <div className="space-y-6">
+      <FilterSection
+        title="Component"
+        items={facets.component_names}
+        selectedValue={selectedFilters.component_name}
+        onSelect={(value) => handleFilterClick('component_name', value)}
+      />
+
       <FilterSection
         title="Instrument Type"
         items={facets.instrument_types}

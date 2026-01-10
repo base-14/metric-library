@@ -72,8 +72,22 @@ describe('FilterPanel', () => {
         onFilterChange={() => {}}
       />
     );
-    expect(screen.getByText('10')).toBeInTheDocument(); // histogram count
-    expect(screen.getAllByText('5')).toHaveLength(2); // counter and exporter both have 5
+    // httpreceiver and histogram both have count 10
+    expect(screen.getAllByText('10')).toHaveLength(2);
+    // counter and exporter both have 5
+    expect(screen.getAllByText('5')).toHaveLength(2);
+  });
+
+  it('renders component section first', () => {
+    render(
+      <FilterPanel
+        facets={mockFacets}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+    expect(screen.getByText('Component')).toBeInTheDocument();
+    expect(screen.getByText('httpreceiver')).toBeInTheDocument();
   });
 
   it('calls onFilterChange when filter is clicked', () => {

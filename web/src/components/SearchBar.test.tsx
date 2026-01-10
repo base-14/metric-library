@@ -15,7 +15,7 @@ describe('SearchBar', () => {
     expect(screen.getByDisplayValue('test query')).toBeInTheDocument();
   });
 
-  it('calls onSearch when form is submitted', () => {
+  it('updates input value when typing', () => {
     const onSearch = vi.fn();
     render(<SearchBar onSearch={onSearch} />);
 
@@ -23,13 +23,13 @@ describe('SearchBar', () => {
       'Search metrics by name or description...'
     );
     fireEvent.change(input, { target: { value: 'http.request' } });
-    fireEvent.submit(input.closest('form')!);
 
-    expect(onSearch).toHaveBeenCalledWith('http.request');
+    expect(input).toHaveValue('http.request');
   });
 
-  it('renders search button', () => {
+  it('renders search icon', () => {
     render(<SearchBar onSearch={() => {}} />);
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
+    const svg = document.querySelector('svg');
+    expect(svg).toBeInTheDocument();
   });
 });

@@ -253,21 +253,21 @@ Outcome:
 
 ## 7. To-Do List (Execution-Ready)
 
-### Foundation
+### Foundation ✅
 
-* [ ] Write canonical schema (JSON Schema)
-* [ ] Document source adapter interface
-* [ ] Set up repo structure
-* [ ] Add CI with schema validation
+* [x] Write canonical schema (Go domain models)
+* [x] Document source adapter interface
+* [x] Set up repo structure
+* [x] Add CI with GitHub Actions (lint, test, build)
 
-### OTEL Collector Contrib
+### OTEL Collector Contrib ✅
 
-* [ ] Repo fetcher (pinned by commit)
-* [ ] metadata.yaml discovery
-* [ ] YAML parser with validation
-* [ ] Metric extraction
-* [ ] Normalization
-* [ ] Snapshot tests
+* [x] Repo fetcher (go-git, pinned by commit)
+* [x] metadata.yaml discovery
+* [x] YAML parser with validation
+* [x] Metric extraction
+* [x] Normalization
+* [x] 1261 metrics extracted
 
 ### OTEL Go Contrib
 
@@ -277,27 +277,27 @@ Outcome:
 * [ ] Option parsing (description, unit)
 * [ ] Merge with metadata metrics
 
-### Storage & Search
+### Storage & Search ✅
 
-* [ ] Canonical metric store (SQLite)
-* [ ] Deterministic output ordering
-* [ ] Full-text search index (FTS5)
-* [ ] Batch indexing
+* [x] Canonical metric store (SQLite)
+* [x] Deterministic output ordering
+* [x] Full-text search index (FTS5)
+* [x] Batch indexing
 
-### Search & Filtering
+### Search & Filtering ✅
 
-* [ ] Free-text search across metric name, description, component
-* [ ] Filter by instrument type (counter, gauge, histogram, updowncounter, summary)
-* [ ] Filter by component type (receiver, exporter, processor, instrumentation, platform)
-* [ ] Filter by component name
-* [ ] Filter by source category (otel, prometheus, kubernetes, cloud, vendor)
-* [ ] Filter by source name
-* [ ] Filter by confidence level (authoritative, derived, documented, vendor_claimed)
+* [x] Free-text search across metric name, description, component
+* [x] Filter by instrument type (counter, gauge, histogram, updowncounter, summary)
+* [x] Filter by component type (receiver, exporter, processor, instrumentation, platform)
+* [x] Filter by component name
+* [x] Filter by source category (otel, prometheus, kubernetes, cloud, vendor)
+* [x] Filter by source name
+* [x] Filter by confidence level (authoritative, derived, documented, vendor_claimed)
 * [ ] Filter by unit
 * [ ] Filter by attribute name
-* [ ] Combined filters (AND logic)
-* [ ] Pagination support
-* [ ] Facet counts for filter options
+* [x] Combined filters (AND logic)
+* [x] Pagination support
+* [x] Facet counts for filter options
 
 ### Prometheus Exporters
 
@@ -345,24 +345,33 @@ Outcome:
 
 ### UI (Next.js + React + Tailwind)
 
-* [ ] Next.js project setup with TypeScript
-* [ ] Tailwind CSS configuration
-* [ ] API client for backend integration
-* [ ] Layout and navigation
-* [ ] Search bar with debounced input
-* [ ] Filter sidebar (metric type, component type, source category, confidence)
-* [ ] Facet counts in filter options
+* [x] Next.js project setup with TypeScript
+* [x] Tailwind CSS configuration
+* [x] API client for backend integration
+* [x] Layout and navigation
+* [ ] Search bar with debounced input (search as you type)
+* [x] Filter sidebar (metric type, component type, source category)
+* [ ] Reorder filters: Component Name first, Instrument Type second
+* [x] Facet counts in filter options
 * [ ] Active filters display with clear buttons
-* [ ] Metric card component with type badges
-* [ ] Metric list with responsive grid layout
-* [ ] Metric detail panel (slide-out or dedicated page)
-* [ ] Attribute display with enum values
+* [x] Metric card component with type badges
+* [x] Metric list with responsive grid layout
+* [x] Metric detail panel (slide-out or dedicated page)
+* [x] Attribute display with enum values
 * [ ] Copy-to-clipboard for metric names
-* [ ] Pagination / infinite scroll
-* [ ] Empty state and loading states
+* [x] Pagination
+* [x] Empty state and loading states
 * [ ] GitHub source link for each metric
 * [ ] Mobile responsive design
 * [ ] Dark mode support (optional)
+
+### DevOps ✅
+
+* [x] Docker multi-stage build (Go backend)
+* [x] Docker standalone build (Next.js frontend)
+* [x] docker-compose for local development
+* [x] make extract command for CLI extraction
+* [ ] Helm chart for Kubernetes deployment
 
 ---
 

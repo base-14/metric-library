@@ -51,13 +51,13 @@ export default function Home() {
     fetchFacets();
   }, [fetchFacets]);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchParams((prev) => ({
       ...prev,
       q: query || undefined,
       offset: 0,
     }));
-  };
+  }, []);
 
   const handleFilterChange = (key: string, value: string | undefined) => {
     setSearchParams((prev) => ({
@@ -77,6 +77,7 @@ export default function Home() {
   const selectedFilters = {
     instrument_type: searchParams.instrument_type,
     component_type: searchParams.component_type,
+    component_name: searchParams.component_name,
     source_category: searchParams.source_category,
   };
 
