@@ -1,4 +1,4 @@
-.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs
+.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs extract
 
 # Binary name
 BINARY_NAME=glossary
@@ -21,6 +21,10 @@ build:
 # Run the application
 run: build
 	./bin/$(BINARY_NAME)
+
+# Run metric extraction
+extract: build
+	./bin/$(BINARY_NAME) extract
 
 # Run tests
 test:
