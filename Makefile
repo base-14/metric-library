@@ -1,4 +1,5 @@
-.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs extract \
+.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-logs \
+	extract extract-otel extract-postgres extract-node extract-all \
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
@@ -23,9 +24,22 @@ build:
 run: build
 	./bin/$(BINARY_NAME)
 
-# Run metric extraction
-extract: build
-	./bin/$(BINARY_NAME) extract
+# Run metric extraction (default: otel-collector-contrib)
+extract: extract-otel
+
+extract-otel: build
+	./bin/$(BINARY_NAME) extract -adapter otel-collector-contrib
+
+extract-postgres: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-postgres
+
+extract-node: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-node
+
+extract-all: build
+	./bin/$(BINARY_NAME) extract -adapter otel-collector-contrib
+	./bin/$(BINARY_NAME) extract -adapter prometheus-postgres
+	./bin/$(BINARY_NAME) extract -adapter prometheus-node
 
 # Run tests
 test:
