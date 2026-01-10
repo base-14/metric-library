@@ -1,4 +1,4 @@
-.PHONY: build test lint migrate migrate-down clean run fmt tidy
+.PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web
 
 # Binary name
 BINARY_NAME=glossary
@@ -71,6 +71,14 @@ dev-deps:
 
 # Run all checks (format, lint, test)
 check: fmt lint test
+
+# CI targets - mirrors GitHub Actions workflow
+ci-go: lint test build
+
+ci-web:
+	cd web && npm ci && npm run lint && npm test && npm run build
+
+ci: ci-go ci-web
 
 # Default target
 all: check build
