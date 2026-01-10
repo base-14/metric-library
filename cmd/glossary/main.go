@@ -23,6 +23,7 @@ import (
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/postgres"
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/redis"
 	"github.com/base14/otel-glossary/internal/api"
+	"github.com/base14/otel-glossary/internal/enricher"
 	"github.com/base14/otel-glossary/internal/orchestrator"
 	"github.com/base14/otel-glossary/internal/store"
 )
@@ -44,6 +45,8 @@ func run() error {
 		return runServe()
 	case "extract":
 		return runExtract(os.Args[2:])
+	case "enrich":
+		return runEnrich(os.Args[2:])
 	default:
 		return runServe()
 	}
@@ -189,6 +192,90 @@ func runExtract(args []string) error {
 	log.Printf("  Metrics extracted: %d", result.MetricsExtracted)
 	log.Printf("  Metrics stored: %d", result.MetricsStored)
 	log.Printf("  Duration: %s", result.Duration)
+
+	return nil
+}
+
+func runEnrich(args []string) error {
+	fs := flag.NewFlagSet("enrich", flag.ExitOnError)
+	dbPath := fs.String("db", "", "Database path (default: $DATABASE_PATH or ./data/glossary.db)")
+
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+
+	if *dbPath == "" {
+		*dbPath = os.Getenv("DATABASE_PATH")
+		if *dbPath == "" {
+			*dbPath = "./data/glossary.db"
+		}
+	}
+
+	log.Printf("Connecting to database at %s", *dbPath)
+	s, err := store.NewSQLiteStoreWithMigrations(*dbPath)
+	if err != nil {
+		return fmt.Errorf("failed to initialize store: %w", err)
+	}
+	defer func() { _ = s.Close() }()
+
+	ctx := context.Background()
+
+	// Load semconv metrics
+	semconvMetrics, err := s.GetSemconvMetrics(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to load semconv metrics: %w", err)
+	}
+
+	if len(semconvMetrics) == 0 {
+		return fmt.Errorf("no semconv metrics found. Run 'extract -adapter otel-semconv' first")
+	}
+
+	log.Printf("Loaded %d semconv metrics for enrichment", len(semconvMetrics))
+
+	// Build enricher index
+	semconvIndex := make([]enricher.SemconvMetric, 0, len(semconvMetrics))
+	for _, m := range semconvMetrics {
+		semconvIndex = append(semconvIndex, enricher.SemconvMetric{
+			Name:      m.MetricName,
+			Stability: "stable", // Default to stable for now; could be extracted from semconv
+		})
+	}
+
+	e := enricher.NewSemconvEnricher(semconvIndex)
+
+	// Load all metrics and enrich them
+	result, err := s.Search(ctx, store.SearchQuery{Limit: 100000})
+	if err != nil {
+		return fmt.Errorf("failed to load metrics: %w", err)
+	}
+
+	log.Printf("Enriching %d metrics...", len(result.Metrics))
+
+	// Enrich all metrics
+	e.EnrichAll(result.Metrics)
+
+	// Count results
+	var exactCount, prefixCount, noneCount int
+	for _, m := range result.Metrics {
+		switch m.SemconvMatch {
+		case "exact":
+			exactCount++
+		case "prefix":
+			prefixCount++
+		default:
+			noneCount++
+		}
+	}
+
+	// Update enriched metrics in database
+	if err := s.UpsertMetrics(ctx, result.Metrics); err != nil {
+		return fmt.Errorf("failed to update enriched metrics: %w", err)
+	}
+
+	log.Printf("Enrichment completed successfully")
+	log.Printf("  Exact matches: %d", exactCount)
+	log.Printf("  Prefix matches: %d", prefixCount)
+	log.Printf("  No match: %d", noneCount)
 
 	return nil
 }

@@ -6,6 +6,8 @@ export interface Attribute {
   enum?: string[];
 }
 
+export type SemconvMatch = 'exact' | 'prefix' | 'none' | '';
+
 export interface CanonicalMetric {
   id: string;
   metric_name: string;
@@ -25,6 +27,9 @@ export interface CanonicalMetric {
   path: string;
   commit: string;
   extracted_at: string;
+  semconv_match?: SemconvMatch;
+  semconv_name?: string;
+  semconv_stability?: string;
 }
 
 export interface SearchResponse {
@@ -41,6 +46,7 @@ export interface FacetResponse {
   source_categories: Record<string, number>;
   source_names: Record<string, number>;
   confidence_levels: Record<string, number>;
+  semconv_matches: Record<string, number>;
   units: Record<string, number>;
 }
 
@@ -52,6 +58,7 @@ export interface SearchParams {
   source_category?: string;
   source_name?: string;
   confidence?: string;
+  semconv_match?: string;
   limit?: number;
   offset?: number;
 }

@@ -12,6 +12,7 @@ export async function searchMetrics(params: SearchParams = {}): Promise<SearchRe
   if (params.source_category) searchParams.set('source_category', params.source_category);
   if (params.source_name) searchParams.set('source_name', params.source_name);
   if (params.confidence) searchParams.set('confidence', params.confidence);
+  if (params.semconv_match) searchParams.set('semconv_match', params.semconv_match);
   if (params.limit) searchParams.set('limit', params.limit.toString());
   if (params.offset) searchParams.set('offset', params.offset.toString());
 

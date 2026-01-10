@@ -104,6 +104,10 @@ func (m *mockStore) GetLatestExtractionRun(ctx context.Context, adapterName stri
 	return nil, nil
 }
 
+func (m *mockStore) GetSemconvMetrics(ctx context.Context) ([]*domain.CanonicalMetric, error) {
+	return nil, nil
+}
+
 func (m *mockStore) Close() error {
 	return nil
 }

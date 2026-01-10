@@ -15,6 +15,7 @@ type SearchQuery struct {
 	SourceCategories []domain.SourceCategory
 	SourceNames      []string
 	ConfidenceLevels []domain.ConfidenceLevel
+	SemconvMatches   []domain.SemconvMatch
 	Units            []string
 	AttributeNames   []string
 	Limit            int
@@ -34,6 +35,7 @@ type FacetCounts struct {
 	SourceCategories map[domain.SourceCategory]int
 	SourceNames      map[string]int
 	ConfidenceLevels map[domain.ConfidenceLevel]int
+	SemconvMatches   map[domain.SemconvMatch]int
 	Units            map[string]int
 }
 
@@ -64,6 +66,9 @@ type Store interface {
 	Search(ctx context.Context, query SearchQuery) (*SearchResult, error)
 	GetFacetCounts(ctx context.Context) (*FacetCounts, error)
 	GetFilteredFacetCounts(ctx context.Context, query FacetQuery) (*FacetCounts, error)
+
+	// Semconv
+	GetSemconvMetrics(ctx context.Context) ([]*domain.CanonicalMetric, error)
 
 	// Extraction runs
 	CreateExtractionRun(ctx context.Context, run *ExtractionRun) error

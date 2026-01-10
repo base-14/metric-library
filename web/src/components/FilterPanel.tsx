@@ -2,6 +2,12 @@
 
 import { FacetResponse } from '@/types/api';
 
+const semconvLabels: Record<string, string> = {
+  exact: 'Exact Match',
+  prefix: 'Prefix Match',
+  none: 'No Match',
+};
+
 interface FilterPanelProps {
   facets: FacetResponse | null;
   selectedFilters: {
@@ -10,6 +16,7 @@ interface FilterPanelProps {
     component_name?: string;
     source_category?: string;
     source_name?: string;
+    semconv_match?: string;
   };
   onFilterChange: (key: string, value: string | undefined) => void;
 }
@@ -38,6 +45,16 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
 
   return (
     <div className="space-y-6">
+      {facets.semconv_matches && Object.keys(facets.semconv_matches).length > 0 && (
+        <FilterSection
+          title="Semantic Convention"
+          items={facets.semconv_matches}
+          selectedValue={selectedFilters.semconv_match}
+          onSelect={(value) => handleFilterClick('semconv_match', value)}
+          labelMap={semconvLabels}
+        />
+      )}
+
       <FilterSection
         title="Source"
         items={facets.source_names}
@@ -81,9 +98,10 @@ interface FilterSectionProps {
   items: Record<string, number>;
   selectedValue?: string;
   onSelect: (value: string) => void;
+  labelMap?: Record<string, string>;
 }
 
-function FilterSection({ title, items, selectedValue, onSelect }: FilterSectionProps) {
+function FilterSection({ title, items, selectedValue, onSelect, labelMap }: FilterSectionProps) {
   const sortedItems = Object.entries(items).sort((a, b) => b[1] - a[1]);
 
   if (sortedItems.length === 0) {
@@ -104,7 +122,7 @@ function FilterSection({ title, items, selectedValue, onSelect }: FilterSectionP
                 : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
             }`}
           >
-            <span>{value}</span>
+            <span>{labelMap?.[value] || value}</span>
             <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
               {count}
             </span>

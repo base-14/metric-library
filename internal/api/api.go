@@ -26,6 +26,7 @@ type FacetResponse struct {
 	SourceCategories map[string]int `json:"source_categories"`
 	SourceNames      map[string]int `json:"source_names"`
 	ConfidenceLevels map[string]int `json:"confidence_levels"`
+	SemconvMatches   map[string]int `json:"semconv_matches"`
 	Units            map[string]int `json:"units"`
 }
 
@@ -102,6 +103,10 @@ func (h *Handler) searchMetrics(w http.ResponseWriter, r *http.Request) {
 		query.ConfidenceLevels = []domain.ConfidenceLevel{domain.ConfidenceLevel(cl)}
 	}
 
+	if sm := r.URL.Query().Get("semconv_match"); sm != "" {
+		query.SemconvMatches = []domain.SemconvMatch{domain.SemconvMatch(sm)}
+	}
+
 	result, err := h.store.Search(r.Context(), query)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "search_failed", err.Error())
@@ -164,6 +169,7 @@ func (h *Handler) getFacets(w http.ResponseWriter, r *http.Request) {
 		SourceCategories: convertFacetMap(facets.SourceCategories),
 		SourceNames:      facets.SourceNames,
 		ConfidenceLevels: convertFacetMap(facets.ConfidenceLevels),
+		SemconvMatches:   convertFacetMap(facets.SemconvMatches),
 		Units:            facets.Units,
 	}
 

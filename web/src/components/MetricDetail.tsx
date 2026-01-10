@@ -93,6 +93,44 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
               </p>
             </section>
 
+            {metric.semconv_match && (metric.semconv_match === 'exact' || metric.semconv_match === 'prefix') && (
+              <section>
+                <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                  Semantic Conventions
+                </h3>
+                <div className={`p-3 rounded-lg border ${
+                  metric.semconv_match === 'exact'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
+                    : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                }`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                      metric.semconv_match === 'exact'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
+                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                    }`}>
+                      {metric.semconv_match === 'exact' ? 'Exact Match' : 'Prefix Match'}
+                    </span>
+                    {metric.semconv_stability && (
+                      <span className="px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                        {metric.semconv_stability}
+                      </span>
+                    )}
+                  </div>
+                  {metric.semconv_name && (
+                    <p className="text-sm font-mono text-gray-700 dark:text-gray-300 mt-1">
+                      {metric.semconv_name}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                    {metric.semconv_match === 'exact'
+                      ? 'This metric exactly matches the OpenTelemetry semantic conventions.'
+                      : 'This metric has a name that starts with a semantic convention metric.'}
+                  </p>
+                </div>
+              </section>
+            )}
+
             <section>
               <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
                 Details

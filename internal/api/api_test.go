@@ -97,6 +97,7 @@ func (m *mockStore) GetFacetCounts(ctx context.Context) (*store.FacetCounts, err
 		ComponentTypes:   map[domain.ComponentType]int{domain.ComponentReceiver: 4, domain.ComponentProcessor: 2},
 		SourceCategories: map[domain.SourceCategory]int{domain.SourceOTEL: 8},
 		ConfidenceLevels: map[domain.ConfidenceLevel]int{domain.ConfidenceAuthoritative: 8},
+		SemconvMatches:   map[domain.SemconvMatch]int{domain.SemconvMatchExact: 2, domain.SemconvMatchNone: 6},
 	}, nil
 }
 
@@ -117,6 +118,10 @@ func (m *mockStore) GetExtractionRun(ctx context.Context, id string) (*store.Ext
 }
 
 func (m *mockStore) GetLatestExtractionRun(ctx context.Context, adapterName string) (*store.ExtractionRun, error) {
+	return nil, nil
+}
+
+func (m *mockStore) GetSemconvMetrics(ctx context.Context) ([]*domain.CanonicalMetric, error) {
 	return nil, nil
 }
 

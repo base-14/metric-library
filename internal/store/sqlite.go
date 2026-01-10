@@ -54,8 +54,9 @@ func (s *SQLiteStore) upsertMetricTx(ctx context.Context, tx *sql.Tx, metric *do
 		INSERT INTO metrics (
 			id, metric_name, instrument_type, description, unit, enabled_by_default,
 			component_type, component_name, source_category, source_name, source_location,
-			extraction_method, source_confidence, repo, path, "commit", extracted_at, updated_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+			extraction_method, source_confidence, repo, path, "commit", extracted_at,
+			semconv_match, semconv_name, semconv_stability, updated_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 		ON CONFLICT(id) DO UPDATE SET
 			metric_name = excluded.metric_name,
 			instrument_type = excluded.instrument_type,
@@ -73,6 +74,9 @@ func (s *SQLiteStore) upsertMetricTx(ctx context.Context, tx *sql.Tx, metric *do
 			path = excluded.path,
 			"commit" = excluded."commit",
 			extracted_at = excluded.extracted_at,
+			semconv_match = excluded.semconv_match,
+			semconv_name = excluded.semconv_name,
+			semconv_stability = excluded.semconv_stability,
 			updated_at = CURRENT_TIMESTAMP
 	`
 
@@ -85,6 +89,7 @@ func (s *SQLiteStore) upsertMetricTx(ctx context.Context, tx *sql.Tx, metric *do
 		metric.ID, metric.MetricName, metric.InstrumentType, metric.Description, metric.Unit, enabledByDefault,
 		metric.ComponentType, metric.ComponentName, metric.SourceCategory, metric.SourceName, metric.SourceLocation,
 		metric.ExtractionMethod, metric.SourceConfidence, metric.Repo, metric.Path, metric.Commit, metric.ExtractedAt,
+		metric.SemconvMatch, metric.SemconvName, metric.SemconvStability,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to upsert metric: %w", err)
@@ -153,18 +158,21 @@ func (s *SQLiteStore) GetMetric(ctx context.Context, id string) (*domain.Canonic
 	query := `
 		SELECT id, metric_name, instrument_type, description, unit, enabled_by_default,
 			component_type, component_name, source_category, source_name, source_location,
-			extraction_method, source_confidence, repo, path, "commit", extracted_at
+			extraction_method, source_confidence, repo, path, "commit", extracted_at,
+			semconv_match, semconv_name, semconv_stability
 		FROM metrics WHERE id = ?
 	`
 
 	var metric domain.CanonicalMetric
 	var enabledByDefault int
 	var description, unit, sourceLocation, repo, path, commit sql.NullString
+	var semconvMatch, semconvName, semconvStability sql.NullString
 
 	err := s.db.QueryRowContext(ctx, query, id).Scan(
 		&metric.ID, &metric.MetricName, &metric.InstrumentType, &description, &unit, &enabledByDefault,
 		&metric.ComponentType, &metric.ComponentName, &metric.SourceCategory, &metric.SourceName, &sourceLocation,
 		&metric.ExtractionMethod, &metric.SourceConfidence, &repo, &path, &commit, &metric.ExtractedAt,
+		&semconvMatch, &semconvName, &semconvStability,
 	)
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -180,6 +188,9 @@ func (s *SQLiteStore) GetMetric(ctx context.Context, id string) (*domain.Canonic
 	metric.Path = path.String
 	metric.Commit = commit.String
 	metric.EnabledByDefault = enabledByDefault == 1
+	metric.SemconvMatch = domain.SemconvMatch(semconvMatch.String)
+	metric.SemconvName = semconvName.String
+	metric.SemconvStability = semconvStability.String
 
 	// Get attributes
 	attrs, err := s.getMetricAttributes(ctx, id)
@@ -324,6 +335,15 @@ func (s *SQLiteStore) Search(ctx context.Context, query SearchQuery) (*SearchRes
 		conditions = append(conditions, fmt.Sprintf("m.source_confidence IN (%s)", strings.Join(placeholders, ",")))
 	}
 
+	if len(query.SemconvMatches) > 0 {
+		placeholders := make([]string, len(query.SemconvMatches))
+		for i, m := range query.SemconvMatches {
+			placeholders[i] = "?"
+			args = append(args, m)
+		}
+		conditions = append(conditions, fmt.Sprintf("m.semconv_match IN (%s)", strings.Join(placeholders, ",")))
+	}
+
 	if len(query.Units) > 0 {
 		placeholders := make([]string, len(query.Units))
 		for i, u := range query.Units {
@@ -379,7 +399,8 @@ func (s *SQLiteStore) Search(ctx context.Context, query SearchQuery) (*SearchRes
 	selectQuery := fmt.Sprintf(`
 		SELECT id, metric_name, instrument_type, description, unit, enabled_by_default,
 			component_type, component_name, source_category, source_name, source_location,
-			extraction_method, source_confidence, repo, path, "commit", extracted_at
+			extraction_method, source_confidence, repo, path, "commit", extracted_at,
+			semconv_match, semconv_name, semconv_stability
 		FROM metrics m %s
 		%s
 		LIMIT ? OFFSET ?
@@ -398,11 +419,13 @@ func (s *SQLiteStore) Search(ctx context.Context, query SearchQuery) (*SearchRes
 		var metric domain.CanonicalMetric
 		var enabledByDefault int
 		var description, unit, sourceLocation, repo, path, commit sql.NullString
+		var semconvMatch, semconvName, semconvStability sql.NullString
 
 		if err := rows.Scan(
 			&metric.ID, &metric.MetricName, &metric.InstrumentType, &description, &unit, &enabledByDefault,
 			&metric.ComponentType, &metric.ComponentName, &metric.SourceCategory, &metric.SourceName, &sourceLocation,
 			&metric.ExtractionMethod, &metric.SourceConfidence, &repo, &path, &commit, &metric.ExtractedAt,
+			&semconvMatch, &semconvName, &semconvStability,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan metric: %w", err)
 		}
@@ -414,6 +437,9 @@ func (s *SQLiteStore) Search(ctx context.Context, query SearchQuery) (*SearchRes
 		metric.Path = path.String
 		metric.Commit = commit.String
 		metric.EnabledByDefault = enabledByDefault == 1
+		metric.SemconvMatch = domain.SemconvMatch(semconvMatch.String)
+		metric.SemconvName = semconvName.String
+		metric.SemconvStability = semconvStability.String
 
 		// Get attributes (could be optimized with a join)
 		attrs, err := s.getMetricAttributes(ctx, metric.ID)
@@ -444,12 +470,13 @@ func (s *SQLiteStore) GetFacetCounts(ctx context.Context) (*FacetCounts, error) 
 		SourceCategories: make(map[domain.SourceCategory]int),
 		SourceNames:      make(map[string]int),
 		ConfidenceLevels: make(map[domain.ConfidenceLevel]int),
+		SemconvMatches:   make(map[domain.SemconvMatch]int),
 		Units:            make(map[string]int),
 	}
 
 	queries := []struct {
 		query  string
-		target interface{}
+		target any
 	}{
 		{"SELECT instrument_type, COUNT(*) FROM metrics GROUP BY instrument_type", &facets.InstrumentTypes},
 		{"SELECT component_type, COUNT(*) FROM metrics GROUP BY component_type", &facets.ComponentTypes},
@@ -457,6 +484,7 @@ func (s *SQLiteStore) GetFacetCounts(ctx context.Context) (*FacetCounts, error) 
 		{"SELECT source_category, COUNT(*) FROM metrics GROUP BY source_category", &facets.SourceCategories},
 		{"SELECT source_name, COUNT(*) FROM metrics GROUP BY source_name", &facets.SourceNames},
 		{"SELECT source_confidence, COUNT(*) FROM metrics GROUP BY source_confidence", &facets.ConfidenceLevels},
+		{"SELECT semconv_match, COUNT(*) FROM metrics WHERE semconv_match IS NOT NULL AND semconv_match != '' GROUP BY semconv_match", &facets.SemconvMatches},
 		{"SELECT unit, COUNT(*) FROM metrics WHERE unit IS NOT NULL AND unit != '' GROUP BY unit", &facets.Units},
 	}
 
@@ -485,6 +513,8 @@ func (s *SQLiteStore) GetFacetCounts(ctx context.Context) (*FacetCounts, error) 
 				(*target)[domain.SourceCategory(key)] = count
 			case *map[domain.ConfidenceLevel]int:
 				(*target)[domain.ConfidenceLevel(key)] = count
+			case *map[domain.SemconvMatch]int:
+				(*target)[domain.SemconvMatch(key)] = count
 			}
 		}
 		_ = rows.Close()
@@ -501,11 +531,12 @@ func (s *SQLiteStore) GetFilteredFacetCounts(ctx context.Context, query FacetQue
 		SourceCategories: make(map[domain.SourceCategory]int),
 		SourceNames:      make(map[string]int),
 		ConfidenceLevels: make(map[domain.ConfidenceLevel]int),
+		SemconvMatches:   make(map[domain.SemconvMatch]int),
 		Units:            make(map[string]int),
 	}
 
 	whereClause := ""
-	var args []interface{}
+	var args []any
 	if query.SourceName != "" {
 		whereClause = " WHERE source_name = ?"
 		args = append(args, query.SourceName)
@@ -513,7 +544,7 @@ func (s *SQLiteStore) GetFilteredFacetCounts(ctx context.Context, query FacetQue
 
 	queries := []struct {
 		query  string
-		target interface{}
+		target any
 	}{
 		{"SELECT instrument_type, COUNT(*) FROM metrics" + whereClause + " GROUP BY instrument_type", &facets.InstrumentTypes},
 		{"SELECT component_type, COUNT(*) FROM metrics" + whereClause + " GROUP BY component_type", &facets.ComponentTypes},
@@ -521,6 +552,7 @@ func (s *SQLiteStore) GetFilteredFacetCounts(ctx context.Context, query FacetQue
 		{"SELECT source_category, COUNT(*) FROM metrics" + whereClause + " GROUP BY source_category", &facets.SourceCategories},
 		{"SELECT source_name, COUNT(*) FROM metrics GROUP BY source_name", &facets.SourceNames}, // Always show all sources
 		{"SELECT source_confidence, COUNT(*) FROM metrics" + whereClause + " GROUP BY source_confidence", &facets.ConfidenceLevels},
+		{"SELECT semconv_match, COUNT(*) FROM metrics WHERE semconv_match IS NOT NULL AND semconv_match != ''" + strings.Replace(whereClause, "WHERE", "AND", 1) + " GROUP BY semconv_match", &facets.SemconvMatches},
 		{"SELECT unit, COUNT(*) FROM metrics WHERE unit IS NOT NULL AND unit != ''" + strings.Replace(whereClause, "WHERE", "AND", 1) + " GROUP BY unit", &facets.Units},
 	}
 
@@ -555,6 +587,8 @@ func (s *SQLiteStore) GetFilteredFacetCounts(ctx context.Context, query FacetQue
 				(*target)[domain.SourceCategory(key)] = count
 			case *map[domain.ConfidenceLevel]int:
 				(*target)[domain.ConfidenceLevel(key)] = count
+			case *map[domain.SemconvMatch]int:
+				(*target)[domain.SemconvMatch(key)] = count
 			}
 		}
 		_ = rows.Close()
@@ -647,6 +681,58 @@ func (s *SQLiteStore) GetLatestExtractionRun(ctx context.Context, adapterName st
 	return &run, nil
 }
 
+func (s *SQLiteStore) GetSemconvMetrics(ctx context.Context) ([]*domain.CanonicalMetric, error) {
+	query := `
+		SELECT id, metric_name, instrument_type, description, unit, enabled_by_default,
+			component_type, component_name, source_category, source_name, source_location,
+			extraction_method, source_confidence, repo, path, "commit", extracted_at,
+			semconv_match, semconv_name, semconv_stability
+		FROM metrics WHERE source_name = 'otel-semconv'
+	`
+
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query semconv metrics: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var metrics []*domain.CanonicalMetric
+	for rows.Next() {
+		var metric domain.CanonicalMetric
+		var enabledByDefault int
+		var description, unit, sourceLocation, repo, path, commit sql.NullString
+		var semconvMatch, semconvName, semconvStability sql.NullString
+
+		if err := rows.Scan(
+			&metric.ID, &metric.MetricName, &metric.InstrumentType, &description, &unit, &enabledByDefault,
+			&metric.ComponentType, &metric.ComponentName, &metric.SourceCategory, &metric.SourceName, &sourceLocation,
+			&metric.ExtractionMethod, &metric.SourceConfidence, &repo, &path, &commit, &metric.ExtractedAt,
+			&semconvMatch, &semconvName, &semconvStability,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan semconv metric: %w", err)
+		}
+
+		metric.Description = description.String
+		metric.Unit = unit.String
+		metric.SourceLocation = sourceLocation.String
+		metric.Repo = repo.String
+		metric.Path = path.String
+		metric.Commit = commit.String
+		metric.EnabledByDefault = enabledByDefault == 1
+		metric.SemconvMatch = domain.SemconvMatch(semconvMatch.String)
+		metric.SemconvName = semconvName.String
+		metric.SemconvStability = semconvStability.String
+
+		metrics = append(metrics, &metric)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate semconv metrics: %w", err)
+	}
+
+	return metrics, nil
+}
+
 // RunMigrations creates the database schema
 func (s *SQLiteStore) RunMigrations(ctx context.Context) error {
 	migrations := []string{
@@ -668,6 +754,9 @@ func (s *SQLiteStore) RunMigrations(ctx context.Context) error {
 			path                TEXT,
 			"commit"            TEXT,
 			extracted_at        TIMESTAMP NOT NULL,
+			semconv_match       TEXT DEFAULT '',
+			semconv_name        TEXT DEFAULT '',
+			semconv_stability   TEXT DEFAULT '',
 			created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)`,
@@ -678,6 +767,7 @@ func (s *SQLiteStore) RunMigrations(ctx context.Context) error {
 		`CREATE INDEX IF NOT EXISTS idx_metrics_source_category ON metrics(source_category)`,
 		`CREATE INDEX IF NOT EXISTS idx_metrics_source_name ON metrics(source_name)`,
 		`CREATE INDEX IF NOT EXISTS idx_metrics_source_confidence ON metrics(source_confidence)`,
+		`CREATE INDEX IF NOT EXISTS idx_metrics_semconv_match ON metrics(semconv_match)`,
 		`CREATE TABLE IF NOT EXISTS metric_attributes (
 			id              INTEGER PRIMARY KEY AUTOINCREMENT,
 			metric_id       TEXT NOT NULL REFERENCES metrics(id) ON DELETE CASCADE,

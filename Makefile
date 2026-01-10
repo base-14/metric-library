@@ -1,5 +1,5 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
-	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all \
+	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all enrich \
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
@@ -68,6 +68,10 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
+
+# Enrich metrics with semconv data
+enrich: build
+	./bin/$(BINARY_NAME) enrich
 
 # Run tests
 test:

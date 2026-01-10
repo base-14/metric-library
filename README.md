@@ -10,7 +10,7 @@ OTel Glossary extracts metric definitions from OpenTelemetry Collector component
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              Sources                                         │
+│                              Sources                                        │
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ │
 │  │otel-contrib│ │  postgres  │ │   redis    │ │    ksm     │ │  cadvisor  │ │
 │  │   (yaml)   │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │  (go ast)  │ │
@@ -19,34 +19,43 @@ OTel Glossary extracts metric definitions from OpenTelemetry Collector component
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              Adapters                                        │
-│                                                                              │
+│                              Adapters                                       │
+│                                                                             │
 │    Each adapter: Fetch (git clone) → Extract (parse) → RawMetric            │
-│                                                                              │
-└─────────────────────────────────────┬───────────────────────────────────────┘
-                                      │
-                                      ▼
+│                                                                             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            Orchestrator                                      │
-│                                                                              │
+│                            Orchestrator                                     │
+│                                                                             │
 │    RawMetric → CanonicalMetric → Store (SQLite + FTS5)                      │
-│                                                                              │
-└─────────────────────────────────────┬───────────────────────────────────────┘
-                                      │
-                                      ▼
+│                                                                             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              REST API                                        │
-│                                                                              │
+│                             Enricher                                        │
+│                                                                             │
+│    Cross-reference with OTel Semantic Conventions                           │
+│    Match types: exact, prefix, none                                         │
+│                                                                             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              REST API                                       │
+│                                                                             │
 │    /api/metrics (search)    /api/facets    /health                          │
-│                                                                              │
-└─────────────────────────────────────┬───────────────────────────────────────┘
-                                      │
-                                      ▼
+│                                                                             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           Next.js Frontend                                   │
-│                                                                              │
-│    Search bar, filters, metric cards, detail view                           │
-│                                                                              │
+│                           Next.js Frontend                                  │
+│                                                                             │
+│    Search bar, filters, metric cards, detail view, semconv badges           │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,6 +97,7 @@ make build-all        # Build both
 
 # Extract metrics
 make extract          # Extract metrics from otel-collector-contrib
+make enrich           # Enrich metrics with semantic convention data
 
 # Test
 make test             # Run Go tests
@@ -123,10 +133,11 @@ otel-glossary/
 │   ├── store/             # SQLite store + migrations
 │   ├── domain/            # Domain models
 │   ├── adapter/           # Source adapters
+│   ├── enricher/          # Semantic convention enrichment
 │   ├── fetcher/           # Git fetcher
 │   ├── discovery/         # Metadata discovery
 │   ├── parser/            # YAML parser
-│   └── extractor/         # Metric extractor
+│   └── orchestrator/      # Extraction orchestration
 ├── web/                   # Next.js frontend
 ├── Dockerfile             # Go backend
 ├── docker-compose.yml     # Local development
@@ -149,6 +160,7 @@ otel-glossary/
 - `component_type` - Filter by component (receiver, processor, exporter)
 - `component_name` - Filter by component name
 - `source_category` - Filter by source
+- `semconv_match` - Filter by semantic convention match (exact, prefix, none)
 - `limit`, `offset` - Pagination
 
 ## Environment Variables
@@ -194,6 +206,33 @@ make extract-ksm       # kube-state-metrics
 make extract-cadvisor  # cAdvisor
 make extract-all       # All sources
 ```
+
+### Semantic Conventions Enrichment
+
+After extracting metrics, you can enrich them with OpenTelemetry Semantic Convention compliance data:
+
+```bash
+# First, extract semantic conventions (if not already done)
+make extract-semconv
+
+# Then run enrichment against all metrics
+make enrich
+```
+
+The enricher cross-references each metric name against the 349 semantic convention metrics and assigns one of three match types:
+
+| Match Type | Description | UI Badge |
+|------------|-------------|----------|
+| `exact` | Metric name exactly matches a semantic convention | SemConv (green) |
+| `prefix` | Metric name starts with a semantic convention metric | SemConv~ (amber) |
+| `none` | No match found | Custom (red) |
+
+The enricher normalizes metric names by converting underscores to dots before matching, so `http_server_request_duration` matches `http.server.request.duration`.
+
+**Example enrichment results:**
+- Exact matches: 410 metrics
+- Prefix matches: 29 metrics
+- No match: 2798 metrics
 
 ### Adding a New Source
 

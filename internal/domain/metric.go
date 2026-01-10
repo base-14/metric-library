@@ -16,6 +16,14 @@ type Attribute struct {
 	Enum        []string `json:"enum,omitempty"`
 }
 
+type SemconvMatch string
+
+const (
+	SemconvMatchExact  SemconvMatch = "exact"
+	SemconvMatchPrefix SemconvMatch = "prefix"
+	SemconvMatchNone   SemconvMatch = "none"
+)
+
 type CanonicalMetric struct {
 	ID               string           `json:"id"`
 	MetricName       string           `json:"metric_name"`
@@ -35,6 +43,11 @@ type CanonicalMetric struct {
 	Path             string           `json:"path"`
 	Commit           string           `json:"commit"`
 	ExtractedAt      time.Time        `json:"extracted_at"`
+
+	// Semantic conventions enrichment
+	SemconvMatch     SemconvMatch `json:"semconv_match,omitempty"`
+	SemconvName      string       `json:"semconv_name,omitempty"`
+	SemconvStability string       `json:"semconv_stability,omitempty"`
 }
 
 var (

@@ -23,6 +23,16 @@ const componentTypeColors: Record<string, string> = {
   connector: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200',
 };
 
+const semconvMatchColors: Record<string, string> = {
+  exact: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+  prefix: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+};
+
+const semconvMatchLabels: Record<string, string> = {
+  exact: 'SemConv',
+  prefix: 'SemConv~',
+};
+
 export function MetricCard({ metric, onClick }: MetricCardProps) {
   return (
     <div
@@ -34,6 +44,14 @@ export function MetricCard({ metric, onClick }: MetricCardProps) {
           {metric.metric_name}
         </h3>
         <div className="flex gap-2 flex-shrink-0 ml-2">
+          {metric.semconv_match && (metric.semconv_match === 'exact' || metric.semconv_match === 'prefix') && (
+            <span
+              className={`px-2 py-1 text-xs font-medium rounded ${semconvMatchColors[metric.semconv_match]}`}
+              title={metric.semconv_match === 'exact' ? 'Matches semantic convention' : 'Prefix matches semantic convention'}
+            >
+              {semconvMatchLabels[metric.semconv_match]}
+            </span>
+          )}
           <span
             className={`px-2 py-1 text-xs font-medium rounded ${
               instrumentTypeColors[metric.instrument_type] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'

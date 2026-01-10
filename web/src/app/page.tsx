@@ -81,6 +81,7 @@ export default function Home() {
     component_name: searchParams.component_name,
     source_category: searchParams.source_category,
     source_name: searchParams.source_name,
+    semconv_match: searchParams.semconv_match,
   };
 
   const activeFilters = Object.entries(selectedFilters).filter(([, value]) => value);
@@ -96,6 +97,13 @@ export default function Home() {
     component_name: 'Component',
     source_category: 'Source Category',
     source_name: 'Source',
+    semconv_match: 'SemConv',
+  };
+
+  const semconvMatchLabels: Record<string, string> = {
+    exact: 'Exact Match',
+    prefix: 'Prefix Match',
+    none: 'No Match',
   };
 
   return (
@@ -136,7 +144,7 @@ export default function Home() {
             )}
             {activeFilters.map(([key, value]) => (
               <span key={key} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded">
-                {filterLabels[key]}: {value}
+                {filterLabels[key]}: {key === 'semconv_match' ? semconvMatchLabels[value as string] || value : value}
                 <button
                   onClick={() => handleFilterChange(key, undefined)}
                   className="ml-1 hover:text-blue-600 dark:hover:text-blue-400"
