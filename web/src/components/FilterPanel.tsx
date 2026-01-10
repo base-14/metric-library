@@ -104,7 +104,7 @@ function FilterSection({ title, items, selectedValue, onSelect }: FilterSectionP
                 : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
             }`}
           >
-            <span className="capitalize">{value}</span>
+            <span>{value}</span>
             <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
               {count}
             </span>

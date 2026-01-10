@@ -200,7 +200,7 @@ function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="text-sm text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="text-gray-900 dark:text-white capitalize">{value}</dd>
+      <dd className="text-gray-900 dark:text-white">{value}</dd>
     </div>
   );
 }
