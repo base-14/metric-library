@@ -1,5 +1,5 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
-	extract extract-otel extract-postgres extract-node extract-all \
+	extract extract-otel extract-postgres extract-node extract-redis extract-all \
 	web-build web-test web-lint build-all test-all lint-all
 
 # Binary name
@@ -36,10 +36,26 @@ extract-postgres: build
 extract-node: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-node
 
+extract-redis: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-redis
+
+extract-mysql: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-mysql
+
+extract-mongodb: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-mongodb
+
+extract-kafka: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
+
 extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter otel-collector-contrib
 	./bin/$(BINARY_NAME) extract -adapter prometheus-postgres
 	./bin/$(BINARY_NAME) extract -adapter prometheus-node
+	./bin/$(BINARY_NAME) extract -adapter prometheus-redis
+	./bin/$(BINARY_NAME) extract -adapter prometheus-mysql
+	./bin/$(BINARY_NAME) extract -adapter prometheus-mongodb
+	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
 
 # Run tests
 test:

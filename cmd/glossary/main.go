@@ -13,8 +13,12 @@ import (
 	"time"
 
 	"github.com/base14/otel-glossary/internal/adapter/otelcontrib"
+	"github.com/base14/otel-glossary/internal/adapter/prometheus/kafka"
+	"github.com/base14/otel-glossary/internal/adapter/prometheus/mongodb"
+	"github.com/base14/otel-glossary/internal/adapter/prometheus/mysql"
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/node"
 	"github.com/base14/otel-glossary/internal/adapter/prometheus/postgres"
+	"github.com/base14/otel-glossary/internal/adapter/prometheus/redis"
 	"github.com/base14/otel-glossary/internal/api"
 	"github.com/base14/otel-glossary/internal/orchestrator"
 	"github.com/base14/otel-glossary/internal/store"
@@ -119,11 +123,10 @@ func runExtract(args []string) error {
 	}
 
 	if *cacheDir == "" {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return fmt.Errorf("failed to get home directory: %w", err)
+		*cacheDir = os.Getenv("CACHE_DIR")
+		if *cacheDir == "" {
+			*cacheDir = "./.cache"
 		}
-		*cacheDir = filepath.Join(home, ".cache", "otel-glossary")
 	}
 
 	if err := os.MkdirAll(filepath.Dir(*dbPath), 0750); err != nil {
@@ -145,6 +148,14 @@ func runExtract(args []string) error {
 		adp = postgres.NewAdapter(*cacheDir)
 	case "prometheus-node":
 		adp = node.NewAdapter(*cacheDir)
+	case "prometheus-redis":
+		adp = redis.NewAdapter(*cacheDir)
+	case "prometheus-mysql":
+		adp = mysql.NewAdapter(*cacheDir)
+	case "prometheus-mongodb":
+		adp = mongodb.NewAdapter(*cacheDir)
+	case "prometheus-kafka":
+		adp = kafka.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}
