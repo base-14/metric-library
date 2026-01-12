@@ -14,8 +14,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build argument for API URL (baked into client bundle)
-ARG NEXT_PUBLIC_API_URL=http://localhost:8080
+# API URL is empty - requests go to /api/* which the route handler proxies
+ARG NEXT_PUBLIC_API_URL=
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
