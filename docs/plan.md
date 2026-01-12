@@ -373,7 +373,6 @@ Outcome:
 
 * [x] kube-state-metrics adapter (261 metrics extracted)
 * [x] cAdvisor adapter (107 metrics extracted)
-* [ ] Metric categorization by object type
 
 ### Language Instrumentations
 
@@ -390,7 +389,6 @@ Outcome:
 * [x] 35 metrics extracted from host-metrics, runtime-node, openai instrumentation
 
 #### Other Languages
-* [ ] Android instrumentation
 * [ ] .NET instrumentation
 
 ### LLM Observability Sources ✅

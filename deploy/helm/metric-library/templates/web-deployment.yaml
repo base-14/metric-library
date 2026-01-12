@@ -40,6 +40,8 @@ spec:
             - name: NODE_ENV
               value: production
             - name: NEXT_PUBLIC_API_URL
+              value: {{ .Values.web.apiUrl | default "/api" }}
+            - name: API_URL
               value: http://{{ include "metric-library.fullname" . }}-api:{{ .Values.api.service.port }}
           livenessProbe:
             httpGet:
