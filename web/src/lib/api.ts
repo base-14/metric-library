@@ -1,6 +1,6 @@
 import { CanonicalMetric, FacetResponse, SearchParams, SearchResponse } from '@/types/api';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 export async function searchMetrics(params: SearchParams = {}): Promise<SearchResponse> {
   const searchParams = new URLSearchParams();

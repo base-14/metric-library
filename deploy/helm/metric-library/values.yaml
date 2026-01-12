@@ -24,9 +24,9 @@ web:
   service:
     type: ClusterIP
     port: 3000
-  # apiUrl: URL for browser-side API calls (default: /api, relies on ingress routing)
-  # For direct API access without ingress, set to full URL like https://api.example.com
-  apiUrl: "/api"
+  # apiUrl: Base URL for browser-side API calls (default: empty for relative paths)
+  # Code adds /api prefix, so leave empty for ingress or set full URL like https://api.example.com
+  apiUrl: ""
   resources:
     limits:
       cpu: 500m
