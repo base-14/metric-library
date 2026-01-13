@@ -123,6 +123,9 @@ make docker-up        # Start services
 make docker-down      # Stop services
 make docker-logs      # View logs
 
+# Release (see Releasing section below)
+git tag web-v0.2.0 && git push origin web-v0.2.0
+
 # Database
 make migrate          # Run migrations (via dbmate)
 make migrate-status   # Check migration status
@@ -304,4 +307,32 @@ type RawMetric struct {
     SourceLocation   string             // File path in source repo
     Path             string             // Discovery path
 }
+```
+
+## Releasing
+
+Docker images are published to GitHub Container Registry (GHCR) via GitHub Actions when tags are pushed.
+
+| Component | Image | Tag Pattern |
+|-----------|-------|-------------|
+| Web Frontend | `ghcr.io/base-14/metric-library-web` | `web-v*` |
+| API Backend | `ghcr.io/base-14/metric-library-api` | `api-v*` |
+
+### Releasing a New Version
+
+```bash
+# Web frontend
+git tag web-v0.2.0 && git push origin web-v0.2.0
+
+# API backend
+git tag api-v0.2.0 && git push origin api-v0.2.0
+```
+
+Each tag push triggers a workflow that builds and pushes both versioned and `latest` tags.
+
+### Pulling Images
+
+```bash
+docker pull ghcr.io/base-14/metric-library-web:latest
+docker pull ghcr.io/base-14/metric-library-api:latest
 ```

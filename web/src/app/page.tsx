@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
+import { Suspense, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { SearchBar } from '@/components/SearchBar';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -32,16 +32,35 @@ function HomeContent() {
   const [error, setError] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<CanonicalMetric | null>(null);
 
-  const searchParams = useMemo<SearchParams>(() => {
-    const params: SearchParams = { limit: 20, offset: 0 };
+  const filterValues = useMemo(() => {
+    const values: Record<string, string> = {};
     for (const key of FILTER_KEYS) {
       const value = urlSearchParams.get(key);
       if (value) {
-        params[key] = value;
+        values[key] = value;
       }
     }
-    return params;
+    return values;
   }, [urlSearchParams]);
+
+  const filterKey = JSON.stringify(filterValues);
+
+  const searchParams = useMemo<SearchParams>(() => {
+    return { limit: 20, offset: 0, ...filterValues };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey]);
+
+  const updateMetricInUrl = useCallback((metricId: string | null) => {
+    const params = new URLSearchParams(window.location.search);
+    if (metricId) {
+      params.set('metric', metricId);
+    } else {
+      params.delete('metric');
+    }
+    const queryString = params.toString();
+    const newUrl = queryString ? `?${queryString}` : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+  }, []);
 
   const updateUrl = useCallback(
     (newParams: SearchParams, metricId?: string | null) => {
@@ -92,47 +111,53 @@ function HomeContent() {
     fetchFacets(searchParams.source_name);
   }, [fetchFacets, searchParams.source_name]);
 
+  const selectedMetricIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    selectedMetricIdRef.current = selectedMetric?.id ?? null;
+  }, [selectedMetric]);
+
   useEffect(() => {
     const metricId = urlSearchParams.get('metric');
-    if (metricId && (!selectedMetric || selectedMetric.id !== metricId)) {
+    if (metricId && metricId !== selectedMetricIdRef.current) {
       getMetric(metricId)
         .then(setSelectedMetric)
         .catch(() => {
-          updateUrl(searchParams, null);
+          updateMetricInUrl(null);
         });
-    } else if (!metricId && selectedMetric) {
-      setSelectedMetric(null);
     }
-  }, [urlSearchParams, selectedMetric, searchParams, updateUrl]);
+    // Only react to URL changes, not state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlSearchParams]);
 
   const handleSearch = useCallback(
     (query: string) => {
       const newParams = { ...searchParams, q: query || undefined, offset: 0 };
-      updateUrl(newParams, urlSearchParams.get('metric'));
+      updateUrl(newParams, selectedMetricIdRef.current);
     },
-    [searchParams, updateUrl, urlSearchParams]
+    [searchParams, updateUrl]
   );
 
   const handleFilterChange = useCallback(
     (key: string, value: string | undefined) => {
       const newParams = { ...searchParams, [key]: value, offset: 0 };
-      updateUrl(newParams, urlSearchParams.get('metric'));
+      updateUrl(newParams, selectedMetricIdRef.current);
     },
-    [searchParams, updateUrl, urlSearchParams]
+    [searchParams, updateUrl]
   );
 
   const handleMetricClick = useCallback(
     (metric: CanonicalMetric) => {
       setSelectedMetric(metric);
-      updateUrl(searchParams, metric.id);
+      updateMetricInUrl(metric.id);
     },
-    [searchParams, updateUrl]
+    [updateMetricInUrl]
   );
 
   const handleMetricClose = useCallback(() => {
     setSelectedMetric(null);
-    updateUrl(searchParams, null);
-  }, [searchParams, updateUrl]);
+    updateMetricInUrl(null);
+  }, [updateMetricInUrl]);
 
   const handleLoadMore = async () => {
     setLoadingMore(true);
