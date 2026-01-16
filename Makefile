@@ -1,7 +1,7 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
 	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all enrich \
 	extract-otel-python extract-otel-java extract-otel-dotnet extract-otel-go extract-otel-rust extract-otel-js extract-openllmetry extract-openlit \
-	web-build web-test web-lint build-all test-all lint-all
+	web-build web-test web-lint build-all test-all lint-all version version-set release
 
 # Binary name
 BINARY_NAME=metric-library
@@ -196,6 +196,32 @@ docker-rebuild: docker-down docker-build docker-up
 
 docker-logs:
 	docker compose logs -f
+
+# Version management
+VERSION_FILE=VERSION
+CURRENT_VERSION=$(shell cat $(VERSION_FILE))
+
+version:
+	@echo $(CURRENT_VERSION)
+
+version-set:
+	@if [ -z "$(V)" ]; then echo "Usage: make version-set V=x.y.z"; exit 1; fi
+	@echo "$(V)" > $(VERSION_FILE)
+	@sed -i '' 's/appVersion: ".*"/appVersion: "$(V)"/' deploy/helm/metric-library/Chart.yaml
+	@sed -i '' 's/tag: ".*"/tag: "$(V)"/' deploy/helm/metric-library/values.yaml
+	@sed -i '' 's/tag: ".*"/tag: "$(V)"/' local/values.yaml
+	@echo "Version updated to $(V)"
+	@echo "Files updated:"
+	@echo "  - VERSION"
+	@echo "  - deploy/helm/metric-library/Chart.yaml (appVersion)"
+	@echo "  - deploy/helm/metric-library/values.yaml (image tags)"
+	@echo "  - local/values.yaml (image tags)"
+
+release: version
+	@echo "Creating release tags for version $(CURRENT_VERSION)..."
+	git tag -a api-v$(CURRENT_VERSION) -m "API release $(CURRENT_VERSION)"
+	git tag -a web-v$(CURRENT_VERSION) -m "Web release $(CURRENT_VERSION)"
+	@echo "Tags created. Push with: git push --tags"
 
 # Default target
 all: check build
