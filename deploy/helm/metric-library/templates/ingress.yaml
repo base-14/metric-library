@@ -1,14 +1,15 @@
 {{- if .Values.ingress.enabled -}}
+# Web ingress - no rewrite needed, Next.js handles basePath
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "metric-library.fullname" . }}
+  name: {{ include "metric-library.fullname" . }}-web
   labels:
     {{- include "metric-library.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
@@ -28,20 +29,53 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
+          - path: {{ $.Values.web.basePath | default "/" }}
+            pathType: Prefix
             backend:
               service:
-                {{- if eq .service "api" }}
-                name: {{ include "metric-library.fullname" $ }}-api
-                port:
-                  number: {{ $.Values.api.service.port }}
-                {{- else }}
                 name: {{ include "metric-library.fullname" $ }}-web
                 port:
                   number: {{ $.Values.web.service.port }}
-                {{- end }}
-          {{- end }}
+    {{- end }}
+---
+# API ingress - rewrite to strip path prefix
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "metric-library.fullname" . }}-api
+  labels:
+    {{- include "metric-library.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /api/$2
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          - path: {{ $.Values.web.apiUrl | default "/api" }}(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "metric-library.fullname" $ }}-api
+                port:
+                  number: {{ $.Values.api.service.port }}
     {{- end }}
 {{- end }}

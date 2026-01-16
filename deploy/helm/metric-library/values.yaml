@@ -74,18 +74,9 @@ refresh:
 ingress:
   enabled: true
   className: nginx
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  annotations: {}
   hosts:
     - host: play.base14.io
-      paths:
-        - path: /metric-registry-api(/|$)(.*)
-          pathType: ImplementationSpecific
-          service: api
-        - path: /metric-registry(/|$)(.*)
-          pathType: ImplementationSpecific
-          service: web
   tls: []
 
 imagePullSecrets: []
