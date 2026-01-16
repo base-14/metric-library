@@ -54,7 +54,9 @@ refresh:
     - otel-python
     - otel-java
     - otel-dotnet
+    - otel-go
     - otel-js
+    - otel-rust
     - openllmetry
     - openlit
     - prometheus-postgres

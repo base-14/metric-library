@@ -17,9 +17,11 @@ import (
 	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
 	"github.com/base-14/metric-library/internal/adapter/llm/openllmetry"
 	"github.com/base-14/metric-library/internal/adapter/otel/dotnet"
+	"github.com/base-14/metric-library/internal/adapter/otel/golang"
 	"github.com/base-14/metric-library/internal/adapter/otel/java"
 	"github.com/base-14/metric-library/internal/adapter/otel/js"
 	"github.com/base-14/metric-library/internal/adapter/otel/python"
+	"github.com/base-14/metric-library/internal/adapter/otel/rust"
 	"github.com/base-14/metric-library/internal/adapter/otel/semconv"
 	"github.com/base-14/metric-library/internal/adapter/otelcontrib"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/kafka"
@@ -180,6 +182,10 @@ func runExtract(args []string) error {
 		adp = java.NewAdapter(*cacheDir)
 	case "otel-dotnet":
 		adp = dotnet.NewAdapter(*cacheDir)
+	case "otel-go":
+		adp = golang.NewAdapter(*cacheDir)
+	case "otel-rust":
+		adp = rust.NewAdapter(*cacheDir)
 	case "otel-js":
 		adp = js.NewAdapter(*cacheDir)
 	case "openllmetry":

@@ -19,7 +19,11 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 │  │otel-python │ │ otel-java  │ │  otel-js   │ │openllmetry │ │  openlit   │           │
 │  │ (py ast)   │ │  (regex)   │ │ (ts parse) │ │ (py ast)   │ │ (py ast)   │           │
 │  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘           │
-│                                                                  15 adapters total    │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐                                         │
+│  │  otel-go   │ │ otel-rust  │ │otel-dotnet │                                         │
+│  │ (go regex) │ │(rust regex)│ │ (c# regex) │                                         │
+│  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘                                         │
+│                                                                  18 adapters total    │
 └────────┼──────────────┼──────────────┼──────────────┼────────────────────────────────┘
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
@@ -192,6 +196,8 @@ metric-library/
 | OpenTelemetry Java | `otel-java` | Regex | 50 | [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation) |
 | OpenTelemetry JS | `otel-js` | TS Parse | 35 | [opentelemetry-js-contrib](https://github.com/open-telemetry/opentelemetry-js-contrib) |
 | OpenTelemetry .NET | `otel-dotnet` | Regex | 25 | [opentelemetry-dotnet-contrib](https://github.com/open-telemetry/opentelemetry-dotnet-contrib) |
+| OpenTelemetry Go | `otel-go` | Regex | 14 | [opentelemetry-go-contrib](https://github.com/open-telemetry/opentelemetry-go-contrib) |
+| OpenTelemetry Rust | `otel-rust` | Regex | 27 | [opentelemetry-rust-contrib](https://github.com/open-telemetry/opentelemetry-rust-contrib) |
 | PostgreSQL Exporter | `prometheus-postgres` | Go AST | 120 | [postgres_exporter](https://github.com/prometheus-community/postgres_exporter) |
 | Node Exporter | `prometheus-node` | Go AST | 553 | [node_exporter](https://github.com/prometheus/node_exporter) |
 | Redis Exporter | `prometheus-redis` | Go AST | 356 | [redis_exporter](https://github.com/oliver006/redis_exporter) |
@@ -203,7 +209,7 @@ metric-library/
 | OpenLLMetry | `openllmetry` | Python AST | 30 | [openllmetry](https://github.com/traceloop/openllmetry) |
 | OpenLIT | `openlit` | Python AST | 21 | [openlit](https://github.com/openlit/openlit) |
 
-**Total: 3,444 metrics**
+**Total: 3,485 metrics**
 
 ### Extract Commands
 
@@ -213,7 +219,9 @@ make extract-semconv      # OpenTelemetry Semantic Conventions
 make extract-otel-python  # OpenTelemetry Python
 make extract-otel-java    # OpenTelemetry Java
 make extract-otel-dotnet  # OpenTelemetry .NET
+make extract-otel-go      # OpenTelemetry Go
 make extract-otel-js      # OpenTelemetry JS
+make extract-otel-rust    # OpenTelemetry Rust
 make extract-postgres     # PostgreSQL Exporter
 make extract-node         # Node Exporter
 make extract-redis        # Redis Exporter
