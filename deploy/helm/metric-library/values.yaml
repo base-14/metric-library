@@ -53,6 +53,8 @@ refresh:
     - otel-semconv
     - otel-python
     - otel-java
+    - otel-dotnet
+    - otel-js
     - openllmetry
     - openlit
     - prometheus-postgres
