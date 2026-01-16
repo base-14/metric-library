@@ -388,8 +388,12 @@ Outcome:
 * [x] otel-js adapter (TypeScript parsing)
 * [x] 35 metrics extracted from host-metrics, runtime-node, openai instrumentation
 
+#### .NET ✅
+* [x] otel-dotnet adapter (regex-based extraction from C# files)
+* [x] 25 metrics extracted from Runtime, Http, SqlClient, Hangfire, AspNet, AWS, EventCounters
+
 #### Other Languages
-* [ ] .NET instrumentation
+* [ ] Ruby instrumentation
 
 ### LLM Observability Sources ✅
 

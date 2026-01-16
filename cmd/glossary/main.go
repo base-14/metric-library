@@ -16,6 +16,7 @@ import (
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
 	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
 	"github.com/base-14/metric-library/internal/adapter/llm/openllmetry"
+	"github.com/base-14/metric-library/internal/adapter/otel/dotnet"
 	"github.com/base-14/metric-library/internal/adapter/otel/java"
 	"github.com/base-14/metric-library/internal/adapter/otel/js"
 	"github.com/base-14/metric-library/internal/adapter/otel/python"
@@ -177,6 +178,8 @@ func runExtract(args []string) error {
 		adp = python.NewAdapter(*cacheDir)
 	case "otel-java":
 		adp = java.NewAdapter(*cacheDir)
+	case "otel-dotnet":
+		adp = dotnet.NewAdapter(*cacheDir)
 	case "otel-js":
 		adp = js.NewAdapter(*cacheDir)
 	case "openllmetry":
