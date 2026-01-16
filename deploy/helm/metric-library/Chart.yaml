@@ -2,7 +2,7 @@ apiVersion: v2
 name: metric-library
 description: A metric discovery platform for cataloging and searching metrics
 type: application
-version: 0.1.2
+version: 0.1.3
 appVersion: "1.0.0"
 keywords:
   - metrics
