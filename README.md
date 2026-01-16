@@ -328,17 +328,39 @@ Docker images are published to GitHub Container Registry (GHCR) via GitHub Actio
 | Web Frontend | `ghcr.io/base-14/metric-library-web` | `web-v*` |
 | API Backend | `ghcr.io/base-14/metric-library-api` | `api-v*` |
 
+### Version Management
+
+The `VERSION` file is the single source of truth for the application version. It keeps these files in sync:
+- `VERSION` - Application version
+- `deploy/helm/metric-library/Chart.yaml` - Helm chart `appVersion`
+- `deploy/helm/metric-library/values.yaml` - Default image tags
+- `local/values.yaml` - Local development image tags
+
+**Version commands:**
+
+```bash
+make version              # Show current version
+make version-set V=0.6.0  # Update version in all files
+make release              # Create git tags for current version
+```
+
 ### Releasing a New Version
 
 ```bash
-# Web frontend
-git tag web-v0.2.0 && git push origin web-v0.2.0
+# 1. Bump version (updates VERSION, Chart.yaml, values.yaml)
+make version-set V=0.6.0
 
-# API backend
-git tag api-v0.2.0 && git push origin api-v0.2.0
+# 2. Commit and push
+git add . && git commit -m "Bump version to 0.6.0"
+git push
+
+# 3. Create and push release tags (triggers CI to build images)
+make release && git push --tags
 ```
 
-Each tag push triggers a workflow that builds and pushes both versioned and `latest` tags.
+This creates `api-v0.6.0` and `web-v0.6.0` tags, triggering GitHub Actions to build and push:
+- `ghcr.io/base-14/metric-library-api:0.6.0`
+- `ghcr.io/base-14/metric-library-web:0.6.0`
 
 ### Pulling Images
 
