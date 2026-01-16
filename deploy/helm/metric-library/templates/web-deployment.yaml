@@ -45,13 +45,13 @@ spec:
               value: http://{{ include "metric-library.fullname" . }}-api:{{ .Values.api.service.port }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.web.basePath | default "" }}/
+              path: {{ .Values.web.basePath | default "/" }}
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: {{ .Values.web.basePath | default "" }}/
+              path: {{ .Values.web.basePath | default "/" }}
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
