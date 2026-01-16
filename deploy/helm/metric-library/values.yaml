@@ -24,9 +24,11 @@ web:
   service:
     type: ClusterIP
     port: 3000
+  # basePath: URL path prefix for Next.js (must be set at build time)
+  basePath: "/metric-registry"
   # apiUrl: Base URL for browser-side API calls (default: empty for relative paths)
   # Code adds /api prefix, so leave empty for ingress or set full URL like https://api.example.com
-  apiUrl: ""
+  apiUrl: "/metric-registry-api"
   resources:
     limits:
       cpu: 500m
@@ -70,17 +72,19 @@ refresh:
       memory: 512Mi
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: metric-library.local
+    - host: play.base14.io
       paths:
-        - path: /api
-          pathType: Prefix
+        - path: /metric-registry-api(/|$)(.*)
+          pathType: ImplementationSpecific
           service: api
-        - path: /
-          pathType: Prefix
+        - path: /metric-registry(/|$)(.*)
+          pathType: ImplementationSpecific
           service: web
   tls: []
 
