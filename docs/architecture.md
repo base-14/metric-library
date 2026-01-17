@@ -612,7 +612,7 @@ LOG_LEVEL=info
 
 ### 11.3 Automation
 
-- **Nightly refresh**: Cron job triggers full extraction
+- **Nightly refresh**: Sidecar container in API pod triggers full extraction
 - **Change detection**: Only process changed files
 - **Failure alerting**: Notify on adapter failures
 

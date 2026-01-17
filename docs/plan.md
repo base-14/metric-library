@@ -426,7 +426,7 @@ Outcome:
 
 ### Automation
 
-* [x] Nightly refresh job (Kubernetes CronJob in Helm chart)
+* [x] Nightly refresh job (sidecar container in API pod)
 * [ ] Change detection
 * [ ] Failure alerting
 
