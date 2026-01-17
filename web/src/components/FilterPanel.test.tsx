@@ -13,6 +13,27 @@ const mockFacets: FacetResponse = {
   units: { ms: 10, '1': 5 },
 };
 
+const mockFacetsWithGroupedSources: FacetResponse = {
+  instrument_types: { histogram: 10 },
+  component_types: { receiver: 15 },
+  component_names: { httpreceiver: 10 },
+  source_categories: { otel: 100 },
+  source_names: {
+    'otel-collector-contrib': 50,
+    'otel-semconv': 30,
+    'otel-python': 20,
+    'prometheus-node': 40,
+    'prometheus-redis': 15,
+    'kubernetes-ksm': 25,
+    'cloudwatch-ec2': 10,
+    'openllmetry': 35,
+    'openlit': 12,
+    'custom-source': 8,
+  },
+  confidence_levels: { high: 100 },
+  units: { ms: 50 },
+};
+
 describe('FilterPanel', () => {
   it('renders loading skeleton when facets are null', () => {
     render(
@@ -129,5 +150,240 @@ describe('FilterPanel', () => {
 
     const histogramButton = screen.getByText('histogram').closest('button');
     expect(histogramButton).toHaveClass('bg-blue-100');
+  });
+});
+
+describe('SourceFilterSection', () => {
+  it('renders search input', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+    expect(screen.getByPlaceholderText('Search sources...')).toBeInTheDocument();
+  });
+
+  it('renders grouped sources with group labels', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+    expect(screen.getByText('OpenTelemetry')).toBeInTheDocument();
+    expect(screen.getByText('Prometheus')).toBeInTheDocument();
+    expect(screen.getByText('Kubernetes')).toBeInTheDocument();
+    expect(screen.getByText('CloudWatch')).toBeInTheDocument();
+    expect(screen.getByText('OpenLLMetry')).toBeInTheDocument();
+    expect(screen.getByText('OpenLIT')).toBeInTheDocument();
+  });
+
+  it('expands group when clicking on group header', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    expect(screen.queryByText('otel-collector-contrib')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('OpenTelemetry'));
+
+    expect(screen.getByText('otel-collector-contrib')).toBeInTheDocument();
+    expect(screen.getByText('otel-semconv')).toBeInTheDocument();
+    expect(screen.getByText('otel-python')).toBeInTheDocument();
+  });
+
+  it('collapses group when clicking expanded group header', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    fireEvent.click(screen.getByText('OpenTelemetry'));
+    expect(screen.getByText('otel-collector-contrib')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('OpenTelemetry'));
+    expect(screen.queryByText('otel-collector-contrib')).not.toBeInTheDocument();
+  });
+
+  it('filters sources when typing in search', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    const searchInput = screen.getByPlaceholderText('Search sources...');
+    fireEvent.change(searchInput, { target: { value: 'prom' } });
+
+    expect(screen.getByText('prometheus-node')).toBeInTheDocument();
+    expect(screen.getByText('prometheus-redis')).toBeInTheDocument();
+    expect(screen.queryByText('OpenTelemetry')).not.toBeInTheDocument();
+  });
+
+  it('expands groups automatically when searching', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    expect(screen.queryByText('otel-collector-contrib')).not.toBeInTheDocument();
+
+    const searchInput = screen.getByPlaceholderText('Search sources...');
+    fireEvent.change(searchInput, { target: { value: 'otel' } });
+
+    expect(screen.getByText('otel-collector-contrib')).toBeInTheDocument();
+  });
+
+  it('shows ungrouped sources directly', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    expect(screen.getByText('custom-source')).toBeInTheDocument();
+  });
+
+  it('calls onFilterChange when clicking source in expanded group', () => {
+    const onFilterChange = vi.fn();
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={onFilterChange}
+      />
+    );
+
+    fireEvent.click(screen.getByText('OpenTelemetry'));
+    fireEvent.click(screen.getByText('otel-collector-contrib'));
+
+    expect(onFilterChange).toHaveBeenCalledWith('source_name', 'otel-collector-contrib');
+  });
+
+  it('displays group total count', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    const otelGroup = screen.getByText('OpenTelemetry').closest('button');
+    const countSpan = otelGroup?.querySelectorAll('span.text-xs')[1];
+    expect(countSpan).toHaveTextContent('100');
+  });
+
+  it('highlights group header when a source in the group is selected', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithGroupedSources}
+        selectedFilters={{ source_name: 'otel-collector-contrib' }}
+        onFilterChange={() => {}}
+      />
+    );
+
+    const otelGroupButton = screen.getByText('OpenTelemetry').closest('button');
+    expect(otelGroupButton).toHaveClass('bg-blue-50');
+  });
+});
+
+describe('SearchableFilterSection (Component)', () => {
+  const mockFacetsWithManyComponents: FacetResponse = {
+    instrument_types: { histogram: 10 },
+    component_types: { receiver: 15 },
+    component_names: {
+      httpreceiver: 50,
+      kafkareceiver: 30,
+      prometheusreceiver: 25,
+      jaegerreceiver: 20,
+      otlpreceiver: 15,
+    },
+    source_categories: { otel: 100 },
+    source_names: { 'otel-collector-contrib': 100 },
+    confidence_levels: { high: 100 },
+    units: { ms: 50 },
+  };
+
+  it('renders search input for components', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithManyComponents}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+    expect(screen.getByPlaceholderText('Search components...')).toBeInTheDocument();
+  });
+
+  it('filters components when typing in search', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithManyComponents}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    expect(screen.getByText('httpreceiver')).toBeInTheDocument();
+    expect(screen.getByText('kafkareceiver')).toBeInTheDocument();
+
+    const searchInput = screen.getByPlaceholderText('Search components...');
+    fireEvent.change(searchInput, { target: { value: 'kafka' } });
+
+    expect(screen.getByText('kafkareceiver')).toBeInTheDocument();
+    expect(screen.queryByText('httpreceiver')).not.toBeInTheDocument();
+  });
+
+  it('calls onFilterChange when clicking filtered component', () => {
+    const onFilterChange = vi.fn();
+    render(
+      <FilterPanel
+        facets={mockFacetsWithManyComponents}
+        selectedFilters={{}}
+        onFilterChange={onFilterChange}
+      />
+    );
+
+    const searchInput = screen.getByPlaceholderText('Search components...');
+    fireEvent.change(searchInput, { target: { value: 'prometheus' } });
+    fireEvent.click(screen.getByText('prometheusreceiver'));
+
+    expect(onFilterChange).toHaveBeenCalledWith('component_name', 'prometheusreceiver');
+  });
+
+  it('shows all components when search is cleared', () => {
+    render(
+      <FilterPanel
+        facets={mockFacetsWithManyComponents}
+        selectedFilters={{}}
+        onFilterChange={() => {}}
+      />
+    );
+
+    const searchInput = screen.getByPlaceholderText('Search components...');
+    fireEvent.change(searchInput, { target: { value: 'kafka' } });
+    expect(screen.queryByText('httpreceiver')).not.toBeInTheDocument();
+
+    fireEvent.change(searchInput, { target: { value: '' } });
+    expect(screen.getByText('httpreceiver')).toBeInTheDocument();
+    expect(screen.getByText('kafkareceiver')).toBeInTheDocument();
   });
 });
