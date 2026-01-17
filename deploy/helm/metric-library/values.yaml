@@ -65,6 +65,14 @@ refresh:
     - prometheus-kafka
     - kubernetes-ksm
     - kubernetes-cadvisor
+    - cloudwatch-ec2
+    - cloudwatch-rds
+    - cloudwatch-lambda
+    - cloudwatch-s3
+    - cloudwatch-dynamodb
+    - cloudwatch-alb
+    - cloudwatch-sqs
+    - cloudwatch-apigateway
   resources:
     limits:
       cpu: 1000m

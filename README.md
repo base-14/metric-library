@@ -23,7 +23,7 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 │  │  otel-go   │ │ otel-rust  │ │otel-dotnet │                                         │
 │  │ (go regex) │ │(rust regex)│ │ (c# regex) │                                         │
 │  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘                                         │
-│                                                                  18 adapters total    │
+│                                                                  26 adapters total    │
 └────────┼──────────────┼──────────────┼──────────────┼────────────────────────────────┘
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
@@ -208,8 +208,16 @@ metric-library/
 | cAdvisor | `kubernetes-cadvisor` | Go AST | 107 | [cadvisor](https://github.com/google/cadvisor) |
 | OpenLLMetry | `openllmetry` | Python AST | 30 | [openllmetry](https://github.com/traceloop/openllmetry) |
 | OpenLIT | `openlit` | Python AST | 21 | [openlit](https://github.com/openlit/openlit) |
+| AWS CloudWatch EC2 | `cloudwatch-ec2` | Doc Scrape | 29 | [AWS Docs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html) |
+| AWS CloudWatch RDS | `cloudwatch-rds` | Doc Scrape | 75 | [AWS Docs](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-metrics.html) |
+| AWS CloudWatch Lambda | `cloudwatch-lambda` | Doc Scrape | 30 | [AWS Docs](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics-types.html) |
+| AWS CloudWatch S3 | `cloudwatch-s3` | Doc Scrape | 22 | [AWS Docs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html) |
+| AWS CloudWatch DynamoDB | `cloudwatch-dynamodb` | Doc Scrape | 46 | [AWS Docs](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html) |
+| AWS CloudWatch ALB | `cloudwatch-alb` | Doc Scrape | 51 | [AWS Docs](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html) |
+| AWS CloudWatch SQS | `cloudwatch-sqs` | Doc Scrape | 16 | [AWS Docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html) |
+| AWS CloudWatch API Gateway | `cloudwatch-apigateway` | Doc Scrape | 7 | [AWS Docs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html) |
 
-**Total: 3,485 metrics**
+**Total: 3,761 metrics**
 
 ### Extract Commands
 
@@ -232,6 +240,14 @@ make extract-ksm          # kube-state-metrics
 make extract-cadvisor     # cAdvisor
 make extract-openllmetry  # OpenLLMetry (LLM observability)
 make extract-openlit      # OpenLIT (LLM observability)
+make extract-cloudwatch-ec2       # AWS CloudWatch EC2
+make extract-cloudwatch-rds       # AWS CloudWatch RDS
+make extract-cloudwatch-lambda    # AWS CloudWatch Lambda
+make extract-cloudwatch-s3        # AWS CloudWatch S3
+make extract-cloudwatch-dynamodb  # AWS CloudWatch DynamoDB
+make extract-cloudwatch-alb       # AWS CloudWatch ALB
+make extract-cloudwatch-sqs       # AWS CloudWatch SQS
+make extract-cloudwatch-apigateway # AWS CloudWatch API Gateway
 make extract-all          # All sources
 ```
 
