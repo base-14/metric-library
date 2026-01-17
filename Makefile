@@ -102,10 +102,18 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter openllmetry
 	./bin/$(BINARY_NAME) extract -adapter openlit
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-ec2
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-rds
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-lambda
 
 # Individual CloudWatch extractions
 extract-cloudwatch-ec2: build
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-ec2
+
+extract-cloudwatch-rds: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-rds
+
+extract-cloudwatch-lambda: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-lambda
 
 # Enrich metrics with semconv data
 enrich: build

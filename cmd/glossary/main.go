@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/ec2"
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/lambda"
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/rds"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/cadvisor"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
 	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
@@ -195,6 +197,10 @@ func runExtract(args []string) error {
 		adp = openlit.NewAdapter(*cacheDir)
 	case "cloudwatch-ec2":
 		adp = ec2.NewAdapter(*cacheDir)
+	case "cloudwatch-rds":
+		adp = rds.NewAdapter(*cacheDir)
+	case "cloudwatch-lambda":
+		adp = lambda.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}
