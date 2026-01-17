@@ -101,6 +101,11 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
 	./bin/$(BINARY_NAME) extract -adapter openllmetry
 	./bin/$(BINARY_NAME) extract -adapter openlit
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-ec2
+
+# Individual CloudWatch extractions
+extract-cloudwatch-ec2: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-ec2
 
 # Enrich metrics with semconv data
 enrich: build

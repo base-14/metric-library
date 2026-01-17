@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/ec2"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/cadvisor"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
 	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
@@ -192,6 +193,8 @@ func runExtract(args []string) error {
 		adp = openllmetry.NewAdapter(*cacheDir)
 	case "openlit":
 		adp = openlit.NewAdapter(*cacheDir)
+	case "cloudwatch-ec2":
+		adp = ec2.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}
