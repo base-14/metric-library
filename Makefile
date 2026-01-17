@@ -104,6 +104,11 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-ec2
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-rds
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-lambda
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-s3
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-dynamodb
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-alb
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-sqs
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-apigateway
 
 # Individual CloudWatch extractions
 extract-cloudwatch-ec2: build
@@ -114,6 +119,21 @@ extract-cloudwatch-rds: build
 
 extract-cloudwatch-lambda: build
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-lambda
+
+extract-cloudwatch-s3: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-s3
+
+extract-cloudwatch-dynamodb: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-dynamodb
+
+extract-cloudwatch-alb: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-alb
+
+extract-cloudwatch-sqs: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-sqs
+
+extract-cloudwatch-apigateway: build
+	./bin/$(BINARY_NAME) extract -adapter cloudwatch-apigateway
 
 # Enrich metrics with semconv data
 enrich: build

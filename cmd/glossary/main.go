@@ -12,9 +12,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/alb"
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/apigateway"
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/dynamodb"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/ec2"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/lambda"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/rds"
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/s3"
+	"github.com/base-14/metric-library/internal/adapter/cloudwatch/sqs"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/cadvisor"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
 	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
@@ -201,6 +206,16 @@ func runExtract(args []string) error {
 		adp = rds.NewAdapter(*cacheDir)
 	case "cloudwatch-lambda":
 		adp = lambda.NewAdapter(*cacheDir)
+	case "cloudwatch-s3":
+		adp = s3.NewAdapter(*cacheDir)
+	case "cloudwatch-dynamodb":
+		adp = dynamodb.NewAdapter(*cacheDir)
+	case "cloudwatch-alb":
+		adp = alb.NewAdapter(*cacheDir)
+	case "cloudwatch-sqs":
+		adp = sqs.NewAdapter(*cacheDir)
+	case "cloudwatch-apigateway":
+		adp = apigateway.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}
