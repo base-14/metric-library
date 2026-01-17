@@ -45,9 +45,7 @@ persistence:
 
 refresh:
   enabled: true
-  schedule: "0 2 * * *"  # 2am daily
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 3
+  schedule: "0 2 * * *"  # 2am daily (runs as sidecar in API pod)
   adapters:
     - otel-collector-contrib
     - otel-semconv

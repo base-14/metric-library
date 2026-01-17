@@ -58,6 +58,52 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /app/data
+        {{- if .Values.refresh.enabled }}
+        - name: refresh
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Refresh sidecar started. Schedule: {{ .Values.refresh.schedule }}"
+              # Parse cron schedule (hour and minute from "M H * * *" format)
+              SCHEDULE="{{ .Values.refresh.schedule }}"
+              CRON_MIN=$(echo "$SCHEDULE" | awk '{print $1}')
+              CRON_HOUR=$(echo "$SCHEDULE" | awk '{print $2}')
+
+              while true; do
+                CURRENT_HOUR=$(date +%H | sed 's/^0//')
+                CURRENT_MIN=$(date +%M | sed 's/^0//')
+
+                if [ "$CURRENT_HOUR" = "$CRON_HOUR" ] && [ "$CURRENT_MIN" = "$CRON_MIN" ]; then
+                  echo "Starting metric refresh at $(date)"
+                  {{- range .Values.refresh.adapters }}
+                  echo "Extracting from {{ . }}..."
+                  ./metric-library extract -adapter {{ . }} || echo "Failed to extract {{ . }}"
+                  {{- end }}
+                  echo "Enriching metrics with semantic conventions..."
+                  ./metric-library enrich || echo "Failed to enrich"
+                  echo "Refresh completed at $(date)"
+                  # Sleep 60s to avoid running twice in the same minute
+                  sleep 60
+                fi
+                # Check every 30 seconds
+                sleep 30
+              done
+          env:
+            - name: DATABASE_PATH
+              value: /app/data/metric-library.db
+            - name: CACHE_DIR
+              value: /app/cache
+          resources:
+            {{- toYaml .Values.refresh.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: cache
+              mountPath: /app/cache
+        {{- end }}
       volumes:
         - name: data
           {{- if .Values.persistence.enabled }}
@@ -66,6 +112,10 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if .Values.refresh.enabled }}
+        - name: cache
+          emptyDir: {}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
