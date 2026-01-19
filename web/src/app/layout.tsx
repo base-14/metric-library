@@ -4,6 +4,8 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
+export const dynamic = 'force-dynamic';
+
 const GTM_ID = process.env.GTM_ID;
 
 const inter = Inter({
