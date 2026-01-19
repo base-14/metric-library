@@ -43,9 +43,6 @@ jobs:
           context: ./web
           platforms: linux/amd64,linux/arm64
           push: true
-          build-args: |
-            NEXT_PUBLIC_BASE_PATH=/metric-registry
-            NEXT_PUBLIC_API_URL=/metric-registry-api
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

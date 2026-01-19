@@ -24,11 +24,10 @@ web:
   service:
     type: ClusterIP
     port: 3000
-  # basePath: URL path prefix for Next.js (must be set at build time)
-  basePath: "/metric-registry"
-  # apiUrl: Base URL for browser-side API calls (default: empty for relative paths)
-  # Code adds /api prefix, so leave empty for ingress or set full URL like https://api.example.com
-  apiUrl: "/metric-registry-api"
+  # basePath: URL path prefix for Next.js (baked in at build time, image defaults to root)
+  basePath: ""
+  # apiUrl: Base URL for browser-side API calls (empty for relative /api paths)
+  apiUrl: ""
   resources:
     limits:
       cpu: 1000m
