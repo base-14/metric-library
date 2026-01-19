@@ -28,6 +28,8 @@ web:
   basePath: ""
   # apiUrl: Base URL for browser-side API calls (empty for relative /api paths)
   apiUrl: ""
+  # gtmId: Google Tag Manager ID (e.g., GTM-XXXXXXX)
+  gtmId: ""
   resources:
     limits:
       cpu: 1000m

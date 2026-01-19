@@ -43,6 +43,10 @@ spec:
               value: {{ .Values.web.apiUrl | default "/api" }}
             - name: API_URL
               value: http://{{ include "metric-library.fullname" . }}-api:{{ .Values.api.service.port }}
+            {{- if .Values.web.gtmId }}
+            - name: GTM_ID
+              value: {{ .Values.web.gtmId | quote }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: {{ .Values.web.basePath | default "/" }}
