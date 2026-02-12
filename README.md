@@ -75,7 +75,7 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 | Go | 1.25 |
 | SQLite | FTS5 (full-text search) |
 | Node.js | 20 |
-| Next.js | 16.1.1 |
+| Next.js | 16.1.6 |
 | golangci-lint | v2.8.0 |
 
 ## Quick Start
