@@ -2,6 +2,7 @@
 	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all enrich \
 	extract-otel-python extract-otel-java extract-otel-dotnet extract-otel-go extract-otel-rust extract-otel-js extract-openllmetry extract-openlit \
 	extract-gcp-compute extract-gcp-cloudsql extract-gcp-gke extract-gcp-loadbalancing extract-gcp-pubsub extract-gcp-cloudrun extract-gcp-storage extract-gcp-cloudfunctions \
+	extract-azure-vm extract-azure-sqldatabase extract-azure-aks extract-azure-appgateway extract-azure-servicebus extract-azure-functions extract-azure-blobstorage extract-azure-cosmosdb \
 	web-build web-test web-lint build-all test-all lint-all version version-set release
 
 # Binary name
@@ -118,6 +119,14 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter gcp-cloudrun
 	./bin/$(BINARY_NAME) extract -adapter gcp-storage
 	./bin/$(BINARY_NAME) extract -adapter gcp-cloudfunctions
+	./bin/$(BINARY_NAME) extract -adapter azure-vm
+	./bin/$(BINARY_NAME) extract -adapter azure-sqldatabase
+	./bin/$(BINARY_NAME) extract -adapter azure-aks
+	./bin/$(BINARY_NAME) extract -adapter azure-appgateway
+	./bin/$(BINARY_NAME) extract -adapter azure-servicebus
+	./bin/$(BINARY_NAME) extract -adapter azure-functions
+	./bin/$(BINARY_NAME) extract -adapter azure-blobstorage
+	./bin/$(BINARY_NAME) extract -adapter azure-cosmosdb
 
 # Individual CloudWatch extractions
 extract-cloudwatch-ec2: build
@@ -168,6 +177,31 @@ extract-gcp-storage: build
 
 extract-gcp-cloudfunctions: build
 	./bin/$(BINARY_NAME) extract -adapter gcp-cloudfunctions
+
+# Individual Azure extractions
+extract-azure-vm: build
+	./bin/$(BINARY_NAME) extract -adapter azure-vm
+
+extract-azure-sqldatabase: build
+	./bin/$(BINARY_NAME) extract -adapter azure-sqldatabase
+
+extract-azure-aks: build
+	./bin/$(BINARY_NAME) extract -adapter azure-aks
+
+extract-azure-appgateway: build
+	./bin/$(BINARY_NAME) extract -adapter azure-appgateway
+
+extract-azure-servicebus: build
+	./bin/$(BINARY_NAME) extract -adapter azure-servicebus
+
+extract-azure-functions: build
+	./bin/$(BINARY_NAME) extract -adapter azure-functions
+
+extract-azure-blobstorage: build
+	./bin/$(BINARY_NAME) extract -adapter azure-blobstorage
+
+extract-azure-cosmosdb: build
+	./bin/$(BINARY_NAME) extract -adapter azure-cosmosdb
 
 # Enrich metrics with semconv data
 enrich: build

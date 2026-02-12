@@ -82,6 +82,14 @@ refresh:
     - gcp-cloudrun
     - gcp-storage
     - gcp-cloudfunctions
+    - azure-vm
+    - azure-sqldatabase
+    - azure-aks
+    - azure-appgateway
+    - azure-servicebus
+    - azure-functions
+    - azure-blobstorage
+    - azure-cosmosdb
   resources:
     limits:
       cpu: 1000m

@@ -23,7 +23,7 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 │  │  otel-go   │ │ otel-rust  │ │otel-dotnet │                                         │
 │  │ (go regex) │ │(rust regex)│ │ (c# regex) │                                         │
 │  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘                                         │
-│                                                                  34 adapters total    │
+│                                                                  42 adapters total    │
 └────────┼──────────────┼──────────────┼──────────────┼────────────────────────────────┘
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
@@ -224,8 +224,16 @@ metric-library/
 | GCP Cloud Run | `gcp-cloudrun` | Doc Scrape | 14 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-run) |
 | GCP Cloud Storage | `gcp-storage` | Doc Scrape | 12 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-storage) |
 | GCP Cloud Functions | `gcp-cloudfunctions` | Doc Scrape | 6 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-cloudfunctions) |
+| Azure Virtual Machines | `azure-vm` | Doc Scrape | 36 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-compute-virtualmachines-metrics) |
+| Azure SQL Database | `azure-sqldatabase` | Doc Scrape | 39 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-sql-servers-databases-metrics) |
+| Azure AKS | `azure-aks` | Doc Scrape | 30 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-containerservice-managedclusters-metrics) |
+| Azure Application Gateway | `azure-appgateway` | Doc Scrape | 20 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-network-applicationgateways-metrics) |
+| Azure Service Bus | `azure-servicebus` | Doc Scrape | 20 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-servicebus-namespaces-metrics) |
+| Azure Functions | `azure-functions` | Doc Scrape | 16 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-web-sites-metrics) |
+| Azure Blob Storage | `azure-blobstorage` | Doc Scrape | 11 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-storage-storageaccounts-blobservices-metrics) |
+| Azure Cosmos DB | `azure-cosmosdb` | Doc Scrape | 26 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-documentdb-databaseaccounts-metrics) |
 
-**Total: 3,961 metrics**
+**Total: 4,159 metrics**
 
 ### Extract Commands
 
@@ -264,6 +272,14 @@ make extract-gcp-pubsub           # GCP Pub/Sub
 make extract-gcp-cloudrun         # GCP Cloud Run
 make extract-gcp-storage          # GCP Cloud Storage
 make extract-gcp-cloudfunctions   # GCP Cloud Functions
+make extract-azure-vm             # Azure Virtual Machines
+make extract-azure-sqldatabase    # Azure SQL Database
+make extract-azure-aks            # Azure AKS
+make extract-azure-appgateway     # Azure Application Gateway
+make extract-azure-servicebus     # Azure Service Bus
+make extract-azure-functions      # Azure Functions
+make extract-azure-blobstorage    # Azure Blob Storage
+make extract-azure-cosmosdb       # Azure Cosmos DB
 make extract-all          # All sources
 ```
 

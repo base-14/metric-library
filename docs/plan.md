@@ -415,7 +415,7 @@ Outcome:
 
 * [x] CloudWatch metrics ingestion (8 adapters: EC2, RDS, Lambda, S3, DynamoDB, ALB, SQS, API Gateway)
 * [x] GCP Cloud Monitoring metrics ingestion (8 adapters: Compute Engine, Cloud SQL, GKE, Load Balancing, Pub/Sub, Cloud Run, Cloud Storage, Cloud Functions)
-* [ ] Azure Monitor metrics ingestion
+* [x] Azure Monitor metrics ingestion (8 adapters: Virtual Machines, SQL Database, AKS, Application Gateway, Service Bus, Azure Functions, Blob Storage, Cosmos DB)
 
 ### Semantic Conventions ✅
 

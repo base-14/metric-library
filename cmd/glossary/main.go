@@ -12,6 +12,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/base-14/metric-library/internal/adapter/azure/aks"
+	"github.com/base-14/metric-library/internal/adapter/azure/appgateway"
+	"github.com/base-14/metric-library/internal/adapter/azure/blobstorage"
+	"github.com/base-14/metric-library/internal/adapter/azure/cosmosdb"
+	azurefunctions "github.com/base-14/metric-library/internal/adapter/azure/functions"
+	"github.com/base-14/metric-library/internal/adapter/azure/servicebus"
+	"github.com/base-14/metric-library/internal/adapter/azure/sqldatabase"
+	azurevm "github.com/base-14/metric-library/internal/adapter/azure/vm"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/alb"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/apigateway"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/dynamodb"
@@ -240,6 +248,22 @@ func runExtract(args []string) error {
 		adp = storage.NewAdapter(*cacheDir)
 	case "gcp-cloudfunctions":
 		adp = cloudfunctions.NewAdapter(*cacheDir)
+	case "azure-vm":
+		adp = azurevm.NewAdapter(*cacheDir)
+	case "azure-sqldatabase":
+		adp = sqldatabase.NewAdapter(*cacheDir)
+	case "azure-aks":
+		adp = aks.NewAdapter(*cacheDir)
+	case "azure-appgateway":
+		adp = appgateway.NewAdapter(*cacheDir)
+	case "azure-servicebus":
+		adp = servicebus.NewAdapter(*cacheDir)
+	case "azure-functions":
+		adp = azurefunctions.NewAdapter(*cacheDir)
+	case "azure-blobstorage":
+		adp = blobstorage.NewAdapter(*cacheDir)
+	case "azure-cosmosdb":
+		adp = cosmosdb.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}
