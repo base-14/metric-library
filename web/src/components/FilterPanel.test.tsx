@@ -26,6 +26,10 @@ const mockFacetsWithGroupedSources: FacetResponse = {
     'prometheus-redis': 15,
     'kubernetes-ksm': 25,
     'cloudwatch-ec2': 10,
+    'gcp-compute': 29,
+    'gcp-cloudsql': 46,
+    'azure-vm': 36,
+    'azure-aks': 30,
     'openllmetry': 35,
     'openlit': 12,
     'custom-source': 8,
@@ -177,6 +181,8 @@ describe('SourceFilterSection', () => {
     expect(screen.getByText('Prometheus')).toBeInTheDocument();
     expect(screen.getByText('Kubernetes')).toBeInTheDocument();
     expect(screen.getByText('CloudWatch')).toBeInTheDocument();
+    expect(screen.getByText('GCP')).toBeInTheDocument();
+    expect(screen.getByText('Azure')).toBeInTheDocument();
     expect(screen.getByText('OpenLLMetry')).toBeInTheDocument();
     expect(screen.getByText('OpenLIT')).toBeInTheDocument();
   });

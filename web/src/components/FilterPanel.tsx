@@ -14,6 +14,8 @@ const sourceGroupConfig: { prefix: string; label: string }[] = [
   { prefix: 'prometheus-', label: 'Prometheus' },
   { prefix: 'kubernetes-', label: 'Kubernetes' },
   { prefix: 'cloudwatch-', label: 'CloudWatch' },
+  { prefix: 'gcp-', label: 'GCP' },
+  { prefix: 'azure-', label: 'Azure' },
   { prefix: 'openllmetry', label: 'OpenLLMetry' },
   { prefix: 'openlit', label: 'OpenLIT' },
 ];
