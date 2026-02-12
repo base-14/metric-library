@@ -23,7 +23,7 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 │  │  otel-go   │ │ otel-rust  │ │otel-dotnet │                                         │
 │  │ (go regex) │ │(rust regex)│ │ (c# regex) │                                         │
 │  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘                                         │
-│                                                                  26 adapters total    │
+│                                                                  34 adapters total    │
 └────────┼──────────────┼──────────────┼──────────────┼────────────────────────────────┘
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
@@ -216,8 +216,16 @@ metric-library/
 | AWS CloudWatch ALB | `cloudwatch-alb` | Doc Scrape | 51 | [AWS Docs](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html) |
 | AWS CloudWatch SQS | `cloudwatch-sqs` | Doc Scrape | 16 | [AWS Docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-available-cloudwatch-metrics.html) |
 | AWS CloudWatch API Gateway | `cloudwatch-apigateway` | Doc Scrape | 7 | [AWS Docs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html) |
+| GCP Compute Engine | `gcp-compute` | Doc Scrape | 29 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-compute) |
+| GCP Cloud SQL | `gcp-cloudsql` | Doc Scrape | 46 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-cloudsql) |
+| GCP GKE | `gcp-gke` | Doc Scrape | 40 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_kubernetes) |
+| GCP Cloud Load Balancing | `gcp-loadbalancing` | Doc Scrape | 24 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-loadbalancing) |
+| GCP Pub/Sub | `gcp-pubsub` | Doc Scrape | 29 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-pubsub) |
+| GCP Cloud Run | `gcp-cloudrun` | Doc Scrape | 14 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-run) |
+| GCP Cloud Storage | `gcp-storage` | Doc Scrape | 12 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-storage) |
+| GCP Cloud Functions | `gcp-cloudfunctions` | Doc Scrape | 6 | [GCP Docs](https://cloud.google.com/monitoring/api/metrics_gcp#gcp-cloudfunctions) |
 
-**Total: 3,761 metrics**
+**Total: 3,961 metrics**
 
 ### Extract Commands
 
@@ -248,6 +256,14 @@ make extract-cloudwatch-dynamodb  # AWS CloudWatch DynamoDB
 make extract-cloudwatch-alb       # AWS CloudWatch ALB
 make extract-cloudwatch-sqs       # AWS CloudWatch SQS
 make extract-cloudwatch-apigateway # AWS CloudWatch API Gateway
+make extract-gcp-compute          # GCP Compute Engine
+make extract-gcp-cloudsql         # GCP Cloud SQL
+make extract-gcp-gke              # GCP GKE
+make extract-gcp-loadbalancing    # GCP Cloud Load Balancing
+make extract-gcp-pubsub           # GCP Pub/Sub
+make extract-gcp-cloudrun         # GCP Cloud Run
+make extract-gcp-storage          # GCP Cloud Storage
+make extract-gcp-cloudfunctions   # GCP Cloud Functions
 make extract-all          # All sources
 ```
 

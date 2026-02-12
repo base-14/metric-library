@@ -74,6 +74,14 @@ refresh:
     - cloudwatch-alb
     - cloudwatch-sqs
     - cloudwatch-apigateway
+    - gcp-compute
+    - gcp-cloudsql
+    - gcp-gke
+    - gcp-loadbalancing
+    - gcp-pubsub
+    - gcp-cloudrun
+    - gcp-storage
+    - gcp-cloudfunctions
   resources:
     limits:
       cpu: 1000m

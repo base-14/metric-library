@@ -413,10 +413,9 @@ Outcome:
 
 ### Cloud Providers
 
-* [ ] Doc scraper framework
-* [ ] CloudWatch metrics ingestion
-* [ ] GCP metrics ingestion
-* [ ] Azure metrics ingestion
+* [x] CloudWatch metrics ingestion (8 adapters: EC2, RDS, Lambda, S3, DynamoDB, ALB, SQS, API Gateway)
+* [x] GCP Cloud Monitoring metrics ingestion (8 adapters: Compute Engine, Cloud SQL, GKE, Load Balancing, Pub/Sub, Cloud Run, Cloud Storage, Cloud Functions)
+* [ ] Azure Monitor metrics ingestion
 
 ### Semantic Conventions ✅
 

@@ -20,6 +20,14 @@ import (
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/rds"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/s3"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/sqs"
+	"github.com/base-14/metric-library/internal/adapter/gcp/cloudfunctions"
+	"github.com/base-14/metric-library/internal/adapter/gcp/cloudrun"
+	"github.com/base-14/metric-library/internal/adapter/gcp/cloudsql"
+	"github.com/base-14/metric-library/internal/adapter/gcp/compute"
+	"github.com/base-14/metric-library/internal/adapter/gcp/gke"
+	"github.com/base-14/metric-library/internal/adapter/gcp/loadbalancing"
+	"github.com/base-14/metric-library/internal/adapter/gcp/pubsub"
+	"github.com/base-14/metric-library/internal/adapter/gcp/storage"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/cadvisor"
 	"github.com/base-14/metric-library/internal/adapter/kubernetes/ksm"
 	"github.com/base-14/metric-library/internal/adapter/llm/openlit"
@@ -216,6 +224,22 @@ func runExtract(args []string) error {
 		adp = sqs.NewAdapter(*cacheDir)
 	case "cloudwatch-apigateway":
 		adp = apigateway.NewAdapter(*cacheDir)
+	case "gcp-compute":
+		adp = compute.NewAdapter(*cacheDir)
+	case "gcp-cloudsql":
+		adp = cloudsql.NewAdapter(*cacheDir)
+	case "gcp-gke":
+		adp = gke.NewAdapter(*cacheDir)
+	case "gcp-loadbalancing":
+		adp = loadbalancing.NewAdapter(*cacheDir)
+	case "gcp-pubsub":
+		adp = pubsub.NewAdapter(*cacheDir)
+	case "gcp-cloudrun":
+		adp = cloudrun.NewAdapter(*cacheDir)
+	case "gcp-storage":
+		adp = storage.NewAdapter(*cacheDir)
+	case "gcp-cloudfunctions":
+		adp = cloudfunctions.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}

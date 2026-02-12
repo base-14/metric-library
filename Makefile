@@ -1,6 +1,7 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
 	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all enrich \
 	extract-otel-python extract-otel-java extract-otel-dotnet extract-otel-go extract-otel-rust extract-otel-js extract-openllmetry extract-openlit \
+	extract-gcp-compute extract-gcp-cloudsql extract-gcp-gke extract-gcp-loadbalancing extract-gcp-pubsub extract-gcp-cloudrun extract-gcp-storage extract-gcp-cloudfunctions \
 	web-build web-test web-lint build-all test-all lint-all version version-set release
 
 # Binary name
@@ -109,6 +110,14 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-alb
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-sqs
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-apigateway
+	./bin/$(BINARY_NAME) extract -adapter gcp-compute
+	./bin/$(BINARY_NAME) extract -adapter gcp-cloudsql
+	./bin/$(BINARY_NAME) extract -adapter gcp-gke
+	./bin/$(BINARY_NAME) extract -adapter gcp-loadbalancing
+	./bin/$(BINARY_NAME) extract -adapter gcp-pubsub
+	./bin/$(BINARY_NAME) extract -adapter gcp-cloudrun
+	./bin/$(BINARY_NAME) extract -adapter gcp-storage
+	./bin/$(BINARY_NAME) extract -adapter gcp-cloudfunctions
 
 # Individual CloudWatch extractions
 extract-cloudwatch-ec2: build
@@ -134,6 +143,31 @@ extract-cloudwatch-sqs: build
 
 extract-cloudwatch-apigateway: build
 	./bin/$(BINARY_NAME) extract -adapter cloudwatch-apigateway
+
+# Individual GCP extractions
+extract-gcp-compute: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-compute
+
+extract-gcp-cloudsql: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-cloudsql
+
+extract-gcp-gke: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-gke
+
+extract-gcp-loadbalancing: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-loadbalancing
+
+extract-gcp-pubsub: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-pubsub
+
+extract-gcp-cloudrun: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-cloudrun
+
+extract-gcp-storage: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-storage
+
+extract-gcp-cloudfunctions: build
+	./bin/$(BINARY_NAME) extract -adapter gcp-cloudfunctions
 
 # Enrich metrics with semconv data
 enrich: build
