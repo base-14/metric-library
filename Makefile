@@ -1,5 +1,5 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
-	extract extract-otel extract-postgres extract-node extract-redis extract-clickhouse extract-elasticsearch extract-ksm extract-cadvisor extract-semconv extract-all enrich \
+	extract extract-otel extract-postgres extract-node extract-redis extract-clickhouse extract-cockroachdb extract-elasticsearch extract-memcached extract-nats extract-ksm extract-cadvisor extract-semconv extract-all enrich \
 	extract-otel-python extract-otel-java extract-otel-dotnet extract-otel-go extract-otel-rust extract-otel-js extract-openllmetry extract-openlit \
 	extract-gcp-compute extract-gcp-cloudsql extract-gcp-gke extract-gcp-loadbalancing extract-gcp-pubsub extract-gcp-cloudrun extract-gcp-storage extract-gcp-cloudfunctions \
 	extract-azure-vm extract-azure-sqldatabase extract-azure-aks extract-azure-appgateway extract-azure-servicebus extract-azure-functions extract-azure-blobstorage extract-azure-cosmosdb \
@@ -54,8 +54,17 @@ extract-kafka: build
 extract-clickhouse: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-clickhouse
 
+extract-cockroachdb: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-cockroachdb
+
 extract-elasticsearch: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-elasticsearch
+
+extract-memcached: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-memcached
+
+extract-nats: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-nats
 
 extract-ksm: build
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
@@ -106,7 +115,10 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-mongodb
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
 	./bin/$(BINARY_NAME) extract -adapter prometheus-clickhouse
+	./bin/$(BINARY_NAME) extract -adapter prometheus-cockroachdb
 	./bin/$(BINARY_NAME) extract -adapter prometheus-elasticsearch
+	./bin/$(BINARY_NAME) extract -adapter prometheus-memcached
+	./bin/$(BINARY_NAME) extract -adapter prometheus-nats
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
 	./bin/$(BINARY_NAME) extract -adapter openllmetry

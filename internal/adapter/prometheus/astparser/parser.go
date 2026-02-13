@@ -36,6 +36,7 @@ func ParseFile(path string) ([]MetricDef, error) {
 func extractMetrics(f *ast.File) ([]MetricDef, error) {
 	var metrics []MetricDef
 	constants := extractConstants(f)
+	sliceVars := extractStringSliceVars(f)
 
 	ast.Inspect(f, func(n ast.Node) bool {
 		call, ok := n.(*ast.CallExpr)
@@ -56,7 +57,7 @@ func extractMetrics(f *ast.File) ([]MetricDef, error) {
 
 		var labels []string
 		if len(call.Args) >= 3 {
-			labels = extractLabels(call.Args[2])
+			labels = extractLabels(call.Args[2], sliceVars)
 		}
 
 		if name != "" {
@@ -78,7 +79,7 @@ func extractConstants(f *ast.File) map[string]string {
 
 	for _, decl := range f.Decls {
 		genDecl, ok := decl.(*ast.GenDecl)
-		if !ok || genDecl.Tok != token.CONST {
+		if !ok || (genDecl.Tok != token.CONST && genDecl.Tok != token.VAR) {
 			continue
 		}
 
@@ -187,8 +188,45 @@ func extractStringLiteral(arg ast.Expr) string {
 	return ""
 }
 
-func extractLabels(arg ast.Expr) []string {
-	comp, ok := arg.(*ast.CompositeLit)
+func extractStringSliceVars(f *ast.File) map[string][]string {
+	vars := make(map[string][]string)
+
+	ast.Inspect(f, func(n ast.Node) bool {
+		assign, ok := n.(*ast.AssignStmt)
+		if !ok || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+			return true
+		}
+
+		ident, ok := assign.Lhs[0].(*ast.Ident)
+		if !ok {
+			return true
+		}
+
+		if labels := parseStringSliceLit(assign.Rhs[0]); labels != nil {
+			vars[ident.Name] = labels
+		}
+		return true
+	})
+
+	return vars
+}
+
+func extractLabels(arg ast.Expr, sliceVars map[string][]string) []string {
+	if labels := parseStringSliceLit(arg); labels != nil {
+		return labels
+	}
+
+	if ident, ok := arg.(*ast.Ident); ok {
+		if labels, found := sliceVars[ident.Name]; found {
+			return labels
+		}
+	}
+
+	return nil
+}
+
+func parseStringSliceLit(expr ast.Expr) []string {
+	comp, ok := expr.(*ast.CompositeLit)
 	if !ok {
 		return nil
 	}

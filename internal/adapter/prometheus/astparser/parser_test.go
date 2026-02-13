@@ -198,6 +198,37 @@ var metricDesc = prometheus.NewDesc(
 	}
 }
 
+func TestParseFile_LabelsFromLocalVariable(t *testing.T) {
+	src := `
+package collector
+
+import "github.com/prometheus/client_golang/prometheus"
+
+func createCollector(system string) {
+	summaryLabels := []string{"server_id"}
+	_ = prometheus.NewDesc(
+		prometheus.BuildFQName("ns", "sub", "metric"),
+		"A metric with labels from a local variable",
+		summaryLabels,
+		nil,
+	)
+}
+`
+	metrics, err := ParseSource("test.go", []byte(src))
+	if err != nil {
+		t.Fatalf("ParseSource failed: %v", err)
+	}
+
+	if len(metrics) != 1 {
+		t.Fatalf("expected 1 metric, got %d", len(metrics))
+	}
+
+	m := metrics[0]
+	if len(m.Labels) != 1 || m.Labels[0] != "server_id" {
+		t.Errorf("expected labels [server_id], got %v", m.Labels)
+	}
+}
+
 func TestParseFile_NoMetrics(t *testing.T) {
 	src := `
 package collector

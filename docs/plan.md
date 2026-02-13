@@ -383,28 +383,27 @@ Outcome:
 * [x] Registered in main.go
 * [x] Extracted 282 metrics
 
-#### memcached_exporter
+#### memcached_exporter ✅
 **Repository:** https://github.com/prometheus/memcached_exporter
-* [ ] Adapter using shared AST parser
-* [ ] Tests written
-* [ ] Registered in main.go
-* [ ] Extract and verify metrics
+* [x] Adapter using shared AST parser
+* [x] Tests written (74% coverage)
+* [x] Registered in main.go
+* [x] Extracted 89 metrics
 
-#### nats_exporter
+#### nats_exporter ✅
 **Repository:** https://github.com/nats-io/prometheus-nats-exporter
-* [ ] Adapter using shared AST parser
-* [ ] Tests written
-* [ ] Registered in main.go
-* [ ] Extract and verify metrics
+* [x] Adapter using shared AST parser with filename-based system prefix resolution (gnatsd/jetstream)
+* [x] Tests written
+* [x] Registered in main.go
+* [x] Extracted 80 metrics
 
-#### cockroachdb
+#### cockroachdb ✅
 **Repository:** https://github.com/cockroachdb/cockroach
-**Note:** Native `/metrics` endpoint; metrics defined in Go source — may need custom AST parsing for `metric.Metadata` structs
-* [ ] Custom Go AST parser for metric.Metadata definitions
-* [ ] Adapter created
-* [ ] Tests written
-* [ ] Registered in main.go
-* [ ] Extract and verify metrics
+* [x] Custom Go AST parser for `metric.Metadata{}` struct literals
+* [x] Walks all `.go` files under `pkg/` recursively
+* [x] Tests written (14 tests)
+* [x] Registered in main.go
+* [x] Extracted 1283 metrics
 
 #### etcd
 **Repository:** https://github.com/etcd-io/etcd

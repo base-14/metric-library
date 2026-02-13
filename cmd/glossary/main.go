@@ -49,10 +49,13 @@ import (
 	"github.com/base-14/metric-library/internal/adapter/otel/semconv"
 	"github.com/base-14/metric-library/internal/adapter/otelcontrib"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/clickhouse"
+	"github.com/base-14/metric-library/internal/adapter/prometheus/cockroachdb"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/elasticsearch"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/kafka"
+	"github.com/base-14/metric-library/internal/adapter/prometheus/memcached"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/mongodb"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/mysql"
+	"github.com/base-14/metric-library/internal/adapter/prometheus/nats"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/node"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/postgres"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/redis"
@@ -196,8 +199,14 @@ func runExtract(args []string) error {
 		adp = mongodb.NewAdapter(*cacheDir)
 	case "prometheus-clickhouse":
 		adp = clickhouse.NewAdapter(*cacheDir)
+	case "prometheus-cockroachdb":
+		adp = cockroachdb.NewAdapter(*cacheDir)
 	case "prometheus-elasticsearch":
 		adp = elasticsearch.NewAdapter(*cacheDir)
+	case "prometheus-memcached":
+		adp = memcached.NewAdapter(*cacheDir)
+	case "prometheus-nats":
+		adp = nats.NewAdapter(*cacheDir)
 	case "prometheus-kafka":
 		adp = kafka.NewAdapter(*cacheDir)
 	case "kubernetes-ksm":
