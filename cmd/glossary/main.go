@@ -48,6 +48,8 @@ import (
 	"github.com/base-14/metric-library/internal/adapter/otel/rust"
 	"github.com/base-14/metric-library/internal/adapter/otel/semconv"
 	"github.com/base-14/metric-library/internal/adapter/otelcontrib"
+	"github.com/base-14/metric-library/internal/adapter/prometheus/clickhouse"
+	"github.com/base-14/metric-library/internal/adapter/prometheus/elasticsearch"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/kafka"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/mongodb"
 	"github.com/base-14/metric-library/internal/adapter/prometheus/mysql"
@@ -192,6 +194,10 @@ func runExtract(args []string) error {
 		adp = mysql.NewAdapter(*cacheDir)
 	case "prometheus-mongodb":
 		adp = mongodb.NewAdapter(*cacheDir)
+	case "prometheus-clickhouse":
+		adp = clickhouse.NewAdapter(*cacheDir)
+	case "prometheus-elasticsearch":
+		adp = elasticsearch.NewAdapter(*cacheDir)
 	case "prometheus-kafka":
 		adp = kafka.NewAdapter(*cacheDir)
 	case "kubernetes-ksm":

@@ -369,6 +369,51 @@ Outcome:
 * [x] Adapter parsing root-level Go files
 * [x] Extracted 16 metrics
 
+#### clickhouse ✅
+**Repository:** https://github.com/ClickHouse/ClickHouse (server source)
+* [x] Regex-based C++ source parsing (CurrentMetrics.cpp, ProfileEvents.cpp, async metrics)
+* [x] Tests written (89% coverage)
+* [x] Registered in main.go
+* [x] Extracted 1725 metrics (451 gauges from system.metrics, 1164 counters from system.events, 110 async gauges)
+
+#### elasticsearch_exporter ✅
+**Repository:** https://github.com/prometheus-community/elasticsearch_exporter
+* [x] Adapter using shared AST parser
+* [x] Tests written (80% coverage)
+* [x] Registered in main.go
+* [x] Extracted 282 metrics
+
+#### memcached_exporter
+**Repository:** https://github.com/prometheus/memcached_exporter
+* [ ] Adapter using shared AST parser
+* [ ] Tests written
+* [ ] Registered in main.go
+* [ ] Extract and verify metrics
+
+#### nats_exporter
+**Repository:** https://github.com/nats-io/prometheus-nats-exporter
+* [ ] Adapter using shared AST parser
+* [ ] Tests written
+* [ ] Registered in main.go
+* [ ] Extract and verify metrics
+
+#### cockroachdb
+**Repository:** https://github.com/cockroachdb/cockroach
+**Note:** Native `/metrics` endpoint; metrics defined in Go source — may need custom AST parsing for `metric.Metadata` structs
+* [ ] Custom Go AST parser for metric.Metadata definitions
+* [ ] Adapter created
+* [ ] Tests written
+* [ ] Registered in main.go
+* [ ] Extract and verify metrics
+
+#### etcd
+**Repository:** https://github.com/etcd-io/etcd
+**Note:** Native `/metrics` endpoint; metrics defined in Go source using `prometheus.NewDesc()` and `promauto` helpers
+* [ ] Adapter using shared AST parser (may need promauto support)
+* [ ] Tests written
+* [ ] Registered in main.go
+* [ ] Extract and verify metrics
+
 ### Kubernetes Metrics ✅
 
 * [x] kube-state-metrics adapter (261 metrics extracted)
@@ -393,7 +438,7 @@ Outcome:
 * [x] 25 metrics extracted from Runtime, Http, SqlClient, Hangfire, AspNet, AWS, EventCounters
 
 #### Other Languages
-* [ ] Ruby instrumentation
+* [~] Ruby instrumentation — **Blocked**: Ruby OTel contrib (opentelemetry-ruby-contrib) has 48+ instrumentations but all are trace/span-only with zero metrics. The metrics SDK in opentelemetry-ruby is alpha/experimental and defines instrument types but no named application metrics. Will revisit when Ruby contrib adds metrics support.
 
 ### LLM Observability Sources ✅
 

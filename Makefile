@@ -1,5 +1,5 @@
 .PHONY: build test lint migrate migrate-down clean run fmt tidy ci ci-go ci-web docker-build docker-up docker-down docker-rebuild docker-logs \
-	extract extract-otel extract-postgres extract-node extract-redis extract-ksm extract-cadvisor extract-semconv extract-all enrich \
+	extract extract-otel extract-postgres extract-node extract-redis extract-clickhouse extract-elasticsearch extract-ksm extract-cadvisor extract-semconv extract-all enrich \
 	extract-otel-python extract-otel-java extract-otel-dotnet extract-otel-go extract-otel-rust extract-otel-js extract-openllmetry extract-openlit \
 	extract-gcp-compute extract-gcp-cloudsql extract-gcp-gke extract-gcp-loadbalancing extract-gcp-pubsub extract-gcp-cloudrun extract-gcp-storage extract-gcp-cloudfunctions \
 	extract-azure-vm extract-azure-sqldatabase extract-azure-aks extract-azure-appgateway extract-azure-servicebus extract-azure-functions extract-azure-blobstorage extract-azure-cosmosdb \
@@ -51,6 +51,12 @@ extract-mongodb: build
 extract-kafka: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
 
+extract-clickhouse: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-clickhouse
+
+extract-elasticsearch: build
+	./bin/$(BINARY_NAME) extract -adapter prometheus-elasticsearch
+
 extract-ksm: build
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
 
@@ -99,6 +105,8 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter prometheus-mysql
 	./bin/$(BINARY_NAME) extract -adapter prometheus-mongodb
 	./bin/$(BINARY_NAME) extract -adapter prometheus-kafka
+	./bin/$(BINARY_NAME) extract -adapter prometheus-clickhouse
+	./bin/$(BINARY_NAME) extract -adapter prometheus-elasticsearch
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-ksm
 	./bin/$(BINARY_NAME) extract -adapter kubernetes-cadvisor
 	./bin/$(BINARY_NAME) extract -adapter openllmetry
