@@ -23,7 +23,7 @@ metric-library extracts metric definitions from OpenTelemetry Collector componen
 │  │  otel-go   │ │ otel-rust  │ │otel-dotnet │                                         │
 │  │ (go regex) │ │(rust regex)│ │ (c# regex) │                                         │
 │  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘                                         │
-│                                                                  42 adapters total    │
+│                                                                  45 adapters total    │
 └────────┼──────────────┼──────────────┼──────────────┼────────────────────────────────┘
          │              │              │              │              │
          ▼              ▼              ▼              ▼              ▼
@@ -232,8 +232,11 @@ metric-library/
 | Azure Functions | `azure-functions` | Doc Scrape | 16 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-web-sites-metrics) |
 | Azure Blob Storage | `azure-blobstorage` | Doc Scrape | 11 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-storage-storageaccounts-blobservices-metrics) |
 | Azure Cosmos DB | `azure-cosmosdb` | Doc Scrape | 26 | [Azure Docs](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/supported-metrics/microsoft-documentdb-databaseaccounts-metrics) |
+| Claude Code | `codingagent-claude-code` | Metadata | 8 | [claude-code-monitoring-guide](https://github.com/anthropics/claude-code-monitoring-guide) |
+| OpenAI Codex | `codingagent-codex` | Rust Regex | — | [codex](https://github.com/openai/codex) |
+| Gemini CLI | `codingagent-gemini` | TS Regex | — | [gemini-cli](https://github.com/google-gemini/gemini-cli) |
 
-**Total: 4,159 metrics**
+**Total: 4,167+ metrics**
 
 ### Extract Commands
 
@@ -280,6 +283,9 @@ make extract-azure-servicebus     # Azure Service Bus
 make extract-azure-functions      # Azure Functions
 make extract-azure-blobstorage    # Azure Blob Storage
 make extract-azure-cosmosdb       # Azure Cosmos DB
+make extract-claude-code          # Claude Code (coding agent)
+make extract-codex                # OpenAI Codex (coding agent)
+make extract-gemini               # Gemini CLI (coding agent)
 make extract-all          # All sources
 ```
 
