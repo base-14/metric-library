@@ -7,6 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.16.4
 	github.com/mattn/go-sqlite3 v1.14.33
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/text v0.24.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

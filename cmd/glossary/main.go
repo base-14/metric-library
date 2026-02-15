@@ -28,6 +28,9 @@ import (
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/rds"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/s3"
 	"github.com/base-14/metric-library/internal/adapter/cloudwatch/sqs"
+	"github.com/base-14/metric-library/internal/adapter/codingagent/claudecode"
+	"github.com/base-14/metric-library/internal/adapter/codingagent/codex"
+	geminicli "github.com/base-14/metric-library/internal/adapter/codingagent/gemini"
 	"github.com/base-14/metric-library/internal/adapter/gcp/cloudfunctions"
 	"github.com/base-14/metric-library/internal/adapter/gcp/cloudrun"
 	"github.com/base-14/metric-library/internal/adapter/gcp/cloudsql"
@@ -279,6 +282,12 @@ func runExtract(args []string) error {
 		adp = blobstorage.NewAdapter(*cacheDir)
 	case "azure-cosmosdb":
 		adp = cosmosdb.NewAdapter(*cacheDir)
+	case "codingagent-claude-code":
+		adp = claudecode.NewAdapter(*cacheDir)
+	case "codingagent-codex":
+		adp = codex.NewAdapter(*cacheDir)
+	case "codingagent-gemini":
+		adp = geminicli.NewAdapter(*cacheDir)
 	default:
 		return fmt.Errorf("unknown adapter: %s", *adapterName)
 	}

@@ -3,6 +3,7 @@
 	extract-otel-python extract-otel-java extract-otel-dotnet extract-otel-go extract-otel-rust extract-otel-js extract-openllmetry extract-openlit \
 	extract-gcp-compute extract-gcp-cloudsql extract-gcp-gke extract-gcp-loadbalancing extract-gcp-pubsub extract-gcp-cloudrun extract-gcp-storage extract-gcp-cloudfunctions \
 	extract-azure-vm extract-azure-sqldatabase extract-azure-aks extract-azure-appgateway extract-azure-servicebus extract-azure-functions extract-azure-blobstorage extract-azure-cosmosdb \
+	extract-claude-code extract-codex extract-gemini \
 	web-build web-test web-lint build-all test-all lint-all version version-set release
 
 # Binary name
@@ -147,6 +148,9 @@ extract-all: build
 	./bin/$(BINARY_NAME) extract -adapter azure-functions
 	./bin/$(BINARY_NAME) extract -adapter azure-blobstorage
 	./bin/$(BINARY_NAME) extract -adapter azure-cosmosdb
+	./bin/$(BINARY_NAME) extract -adapter codingagent-claude-code
+	./bin/$(BINARY_NAME) extract -adapter codingagent-codex
+	./bin/$(BINARY_NAME) extract -adapter codingagent-gemini
 
 # Individual CloudWatch extractions
 extract-cloudwatch-ec2: build
@@ -222,6 +226,16 @@ extract-azure-blobstorage: build
 
 extract-azure-cosmosdb: build
 	./bin/$(BINARY_NAME) extract -adapter azure-cosmosdb
+
+# Individual Coding Agent extractions
+extract-claude-code: build
+	./bin/$(BINARY_NAME) extract -adapter codingagent-claude-code
+
+extract-codex: build
+	./bin/$(BINARY_NAME) extract -adapter codingagent-codex
+
+extract-gemini: build
+	./bin/$(BINARY_NAME) extract -adapter codingagent-gemini
 
 # Enrich metrics with semconv data
 enrich: build

@@ -449,6 +449,22 @@ Outcome:
 * [x] openlit adapter (Python AST with constant resolution)
 * [x] 21 metrics extracted (GenAI, DB, MCP protocol)
 
+### Coding Agents ✅
+
+#### Claude Code ✅
+* [x] Hardcoded adapter from official monitoring guide docs
+* [x] 8 metrics extracted (sessions, tokens, cost, commits, PRs, LOC, tool decisions, active time)
+
+#### OpenAI Codex ✅
+* [x] Regex-based Rust source parsing (codex-rs/otel/src/metrics/names.rs)
+* [x] Tests written
+* [x] Registered in main.go
+
+#### Gemini CLI ✅
+* [x] Regex-based TypeScript source parsing (packages/core/src/telemetry/metrics.ts)
+* [x] Tests written
+* [x] Registered in main.go
+
 ### Databases & Messaging
 
 * [ ] Exporter-based extraction

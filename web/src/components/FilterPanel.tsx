@@ -18,6 +18,7 @@ const sourceGroupConfig: { prefix: string; label: string }[] = [
   { prefix: 'azure-', label: 'Azure' },
   { prefix: 'openllmetry', label: 'OpenLLMetry' },
   { prefix: 'openlit', label: 'OpenLIT' },
+  { prefix: 'codingagent-', label: 'Coding Agents' },
 ];
 
 interface FilterPanelProps {

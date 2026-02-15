@@ -41,16 +41,17 @@ func (t ComponentType) IsValid() bool {
 type SourceCategory string
 
 const (
-	SourceOTEL       SourceCategory = "otel"
-	SourcePrometheus SourceCategory = "prometheus"
-	SourceKubernetes SourceCategory = "kubernetes"
-	SourceCloud      SourceCategory = "cloud"
-	SourceVendor     SourceCategory = "vendor"
+	SourceOTEL        SourceCategory = "otel"
+	SourcePrometheus  SourceCategory = "prometheus"
+	SourceKubernetes  SourceCategory = "kubernetes"
+	SourceCloud       SourceCategory = "cloud"
+	SourceVendor      SourceCategory = "vendor"
+	SourceCodingAgent SourceCategory = "codingagent"
 )
 
 func (c SourceCategory) IsValid() bool {
 	switch c {
-	case SourceOTEL, SourcePrometheus, SourceKubernetes, SourceCloud, SourceVendor:
+	case SourceOTEL, SourcePrometheus, SourceKubernetes, SourceCloud, SourceVendor, SourceCodingAgent:
 		return true
 	}
 	return false
