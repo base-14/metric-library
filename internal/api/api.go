@@ -55,10 +55,15 @@ func (h *Handler) setupRoutes() {
 
 	r.Get("/health", h.healthCheck)
 	r.Route("/api", func(r chi.Router) {
-		r.Use(cacheMiddleware(86400)) // 24 hours
-		r.Get("/metrics", h.searchMetrics)
-		r.Get("/metrics/{id}", h.getMetric)
-		r.Get("/facets", h.getFacets)
+		r.Group(func(r chi.Router) {
+			r.Use(cacheMiddleware(86400)) // 24 hours
+			r.Get("/metrics", h.searchMetrics)
+			r.Get("/metrics/{id}", h.getMetric)
+		})
+		r.Group(func(r chi.Router) {
+			r.Use(cacheMiddleware(300)) // 5 minutes
+			r.Get("/facets", h.getFacets)
+		})
 	})
 
 	h.router = r
