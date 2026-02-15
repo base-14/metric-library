@@ -64,6 +64,11 @@ refresh:
     - prometheus-mysql
     - prometheus-mongodb
     - prometheus-kafka
+    - prometheus-clickhouse
+    - prometheus-cockroachdb
+    - prometheus-elasticsearch
+    - prometheus-memcached
+    - prometheus-nats
     - kubernetes-ksm
     - kubernetes-cadvisor
     - cloudwatch-ec2
@@ -90,6 +95,9 @@ refresh:
     - azure-functions
     - azure-blobstorage
     - azure-cosmosdb
+    - codingagent-claude-code
+    - codingagent-codex
+    - codingagent-gemini
   resources:
     limits:
       cpu: 1000m
