@@ -62,34 +62,50 @@ func TestAdapter_Extract(t *testing.T) {
 		t.Fatalf("failed to create metrics dir: %v", err)
 	}
 
-	tsSource := `import { Meter } from '@opentelemetry/api';
+	tsSource := `import { ValueType } from '@opentelemetry/api';
 
-export function registerMetrics(meter: Meter) {
-  meter.createCounter('gemini_cli.session.count', {
-    description: 'Number of CLI sessions started',
-    unit: 'count',
-  });
+const TOOL_CALL_COUNT = 'gemini_cli.tool.call.count';
+const TOOL_CALL_LATENCY = 'gemini_cli.tool.call.latency';
+const API_REQUEST_COUNT = 'gemini_cli.api.request.count';
+const TOKEN_USAGE = 'gemini_cli.token.usage';
+const SESSION_COUNT = 'gemini_cli.session.count';
 
-  meter.createCounter('gemini_cli.token.usage', {
-    description: 'Number of tokens consumed',
-    unit: 'tokens',
-  });
+const COUNTER_DEFINITIONS = {
+  [TOOL_CALL_COUNT]: {
+    description: 'Counts tool calls, tagged by function name and success.',
+    valueType: ValueType.INT,
+    assign: (c: Counter) => (toolCallCounter = c),
+    attributes: {} as { function_name: string; success: boolean; },
+  },
+  [API_REQUEST_COUNT]: {
+    description: 'Counts API requests, tagged by model and status.',
+    valueType: ValueType.INT,
+    assign: (c: Counter) => (apiRequestCounter = c),
+    attributes: {} as { model: string; },
+  },
+  [TOKEN_USAGE]: {
+    description: 'Counts the total number of tokens used.',
+    valueType: ValueType.INT,
+    assign: (c: Counter) => (tokenUsageCounter = c),
+    attributes: {} as { model: string; type: string; },
+  },
+  [SESSION_COUNT]: {
+    description: 'Count of CLI sessions started.',
+    valueType: ValueType.INT,
+    assign: (c: Counter) => (sessionCounter = c),
+    attributes: {} as Record<string, never>,
+  },
+} as const;
 
-  meter.createHistogram('gemini_cli.tool.call.latency', {
-    description: 'Latency of tool calls',
+const HISTOGRAM_DEFINITIONS = {
+  [TOOL_CALL_LATENCY]: {
+    description: 'Latency of tool calls in milliseconds.',
     unit: 'ms',
-  });
-
-  meter.createHistogram('gemini_cli.api.request.duration', {
-    description: 'Duration of API requests',
-    unit: 'ms',
-  });
-
-  meter.createCounter('gemini_cli.error.count', {
-    description: 'Number of errors encountered',
-    unit: 'count',
-  });
-}
+    valueType: ValueType.INT,
+    assign: (h: Histogram) => (toolCallLatencyHistogram = h),
+    attributes: {} as { function_name: string; },
+  },
+} as const;
 `
 	if err := os.WriteFile(filepath.Join(metricsDir, "metrics.ts"), []byte(tsSource), 0600); err != nil {
 		t.Fatalf("failed to write ts file: %v", err)
@@ -116,7 +132,7 @@ export function registerMetrics(meter: Meter) {
 	}
 
 	// Check counters
-	for _, name := range []string{"gemini_cli.session.count", "gemini_cli.token.usage", "gemini_cli.error.count"} {
+	for _, name := range []string{"gemini_cli.tool.call.count", "gemini_cli.api.request.count", "gemini_cli.token.usage", "gemini_cli.session.count"} {
 		m, ok := names[name]
 		if !ok {
 			t.Errorf("missing metric %q", name)
@@ -128,7 +144,7 @@ export function registerMetrics(meter: Meter) {
 	}
 
 	// Check histograms
-	for _, name := range []string{"gemini_cli.tool.call.latency", "gemini_cli.api.request.duration"} {
+	for _, name := range []string{"gemini_cli.tool.call.latency"} {
 		m, ok := names[name]
 		if !ok {
 			t.Errorf("missing metric %q", name)
@@ -143,8 +159,8 @@ export function registerMetrics(meter: Meter) {
 	}
 
 	// Check descriptions
-	m := names["gemini_cli.session.count"]
-	if m.Description != "Number of CLI sessions started" {
+	m := names["gemini_cli.tool.call.count"]
+	if m.Description != "Counts tool calls, tagged by function name and success." {
 		t.Errorf("unexpected description: %q", m.Description)
 	}
 
@@ -159,7 +175,7 @@ export function registerMetrics(meter: Meter) {
 	}
 }
 
-func TestAdapter_Extract_SingleQuotesAndDoubleQuotes(t *testing.T) {
+func TestAdapter_Extract_PerformanceMetrics(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "gemini-adapter-test-*")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
@@ -172,15 +188,25 @@ func TestAdapter_Extract_SingleQuotesAndDoubleQuotes(t *testing.T) {
 	}
 
 	tsSource := `
-  meter.createCounter('gemini_cli.single_quoted', {
-    description: 'Single quoted metric',
-    unit: 'count',
-  });
+const STARTUP_TIME = 'gemini_cli.startup.duration';
+const REGRESSION_DETECTION = 'gemini_cli.performance.regression';
 
-  meter.createCounter("gemini_cli.double_quoted", {
-    description: "Double quoted metric",
-    unit: "count",
-  });
+const PERFORMANCE_COUNTER_DEFINITIONS = {
+  [REGRESSION_DETECTION]: {
+    description: 'Performance regression detection events.',
+    valueType: ValueType.INT,
+    assign: (c: Counter) => (regressionDetectionCounter = c),
+  },
+} as const;
+
+const PERFORMANCE_HISTOGRAM_DEFINITIONS = {
+  [STARTUP_TIME]: {
+    description: 'CLI startup time in milliseconds.',
+    unit: 'ms',
+    valueType: ValueType.DOUBLE,
+    assign: (h: Histogram) => (startupTimeHistogram = h),
+  },
+} as const;
 `
 	if err := os.WriteFile(filepath.Join(metricsDir, "metrics.ts"), []byte(tsSource), 0600); err != nil {
 		t.Fatalf("failed to write ts file: %v", err)
@@ -196,6 +222,71 @@ func TestAdapter_Extract_SingleQuotesAndDoubleQuotes(t *testing.T) {
 
 	if len(metrics) != 2 {
 		t.Fatalf("expected 2 metrics, got %d", len(metrics))
+	}
+
+	names := make(map[string]*adapter.RawMetric)
+	for _, m := range metrics {
+		names[m.Name] = m
+	}
+
+	if m, ok := names["gemini_cli.performance.regression"]; !ok {
+		t.Error("missing metric gemini_cli.performance.regression")
+	} else if m.InstrumentType != "counter" {
+		t.Errorf("expected counter, got %q", m.InstrumentType)
+	}
+
+	if m, ok := names["gemini_cli.startup.duration"]; !ok {
+		t.Error("missing metric gemini_cli.startup.duration")
+	} else if m.InstrumentType != "histogram" {
+		t.Errorf("expected histogram, got %q", m.InstrumentType)
+	}
+}
+
+func TestAdapter_Extract_MultilineConst(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "gemini-adapter-test-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer func() { _ = os.RemoveAll(tmpDir) }()
+
+	metricsDir := filepath.Join(tmpDir, "packages", "core", "src", "telemetry")
+	if err := os.MkdirAll(metricsDir, 0750); err != nil {
+		t.Fatalf("failed to create metrics dir: %v", err)
+	}
+
+	// Test multiline const declarations like:
+	// const CONTENT_RETRY_FAILURE_COUNT =
+	//   'gemini_cli.chat.content_retry_failure.count';
+	tsSource := `
+const CONTENT_RETRY_FAILURE_COUNT =
+  'gemini_cli.chat.content_retry_failure.count';
+
+const COUNTER_DEFINITIONS = {
+  [CONTENT_RETRY_FAILURE_COUNT]: {
+    description: 'Counts occurrences of all content retries failing.',
+    valueType: ValueType.INT,
+    assign: (c: Counter) => (contentRetryFailureCounter = c),
+  },
+} as const;
+`
+	if err := os.WriteFile(filepath.Join(metricsDir, "metrics.ts"), []byte(tsSource), 0600); err != nil {
+		t.Fatalf("failed to write ts file: %v", err)
+	}
+
+	a := NewAdapter("/tmp/cache")
+	result := &adapter.FetchResult{RepoPath: tmpDir, Commit: "abc123"}
+
+	metrics, err := a.Extract(context.Background(), result)
+	if err != nil {
+		t.Fatalf("Extract failed: %v", err)
+	}
+
+	if len(metrics) != 1 {
+		t.Fatalf("expected 1 metric, got %d", len(metrics))
+	}
+
+	if metrics[0].Name != "gemini_cli.chat.content_retry_failure.count" {
+		t.Errorf("unexpected name: %q", metrics[0].Name)
 	}
 }
 
@@ -241,50 +332,5 @@ func TestAdapter_Extract_MissingFile(t *testing.T) {
 	_, err = a.Extract(context.Background(), result)
 	if err == nil {
 		t.Error("expected error for missing file")
-	}
-}
-
-func TestAdapter_Extract_MultipleFiles(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "gemini-adapter-test-*")
-	if err != nil {
-		t.Fatalf("failed to create temp dir: %v", err)
-	}
-	defer func() { _ = os.RemoveAll(tmpDir) }()
-
-	metricsDir := filepath.Join(tmpDir, "packages", "core", "src", "telemetry")
-	if err := os.MkdirAll(metricsDir, 0750); err != nil {
-		t.Fatalf("failed to create metrics dir: %v", err)
-	}
-
-	metricsTS := `
-  meter.createCounter('gemini_cli.session.count', {
-    description: 'Sessions',
-    unit: 'count',
-  });
-`
-	if err := os.WriteFile(filepath.Join(metricsDir, "metrics.ts"), []byte(metricsTS), 0600); err != nil {
-		t.Fatalf("failed to write metrics.ts: %v", err)
-	}
-
-	otherTS := `
-  meter.createCounter('gemini_cli.other.count', {
-    description: 'Other metric',
-    unit: 'count',
-  });
-`
-	if err := os.WriteFile(filepath.Join(metricsDir, "other_metrics.ts"), []byte(otherTS), 0600); err != nil {
-		t.Fatalf("failed to write other_metrics.ts: %v", err)
-	}
-
-	a := NewAdapter("/tmp/cache")
-	result := &adapter.FetchResult{RepoPath: tmpDir, Commit: "abc123"}
-
-	metrics, err := a.Extract(context.Background(), result)
-	if err != nil {
-		t.Fatalf("Extract failed: %v", err)
-	}
-
-	if len(metrics) != 2 {
-		t.Fatalf("expected 2 metrics from both files, got %d", len(metrics))
 	}
 }

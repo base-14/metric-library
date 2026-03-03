@@ -10,10 +10,10 @@ api:
   resources:
     limits:
       cpu: 2000m
-      memory: 1Gi
+      memory: 1500Mi
     requests:
       cpu: 500m
-      memory: 512Mi
+      memory: 1000Mi
 
 web:
   replicaCount: 1

@@ -18,7 +18,7 @@ import (
 
 const repoURL = "https://github.com/openai/codex"
 
-var metricPattern = regexp.MustCompile(`pub\s+const\s+\w+:\s*&str\s*=\s*"([^"]+)"`)
+var metricPattern = regexp.MustCompile(`pub(\(crate\))?\s+const\s+\w+:\s*&str\s*=\s*"([^"]+)"`)
 
 type Adapter struct {
 	fetcher *fetcher.GitFetcher
@@ -83,10 +83,10 @@ func (a *Adapter) Extract(_ context.Context, result *adapter.FetchResult) ([]*ad
 
 	var metrics []*adapter.RawMetric
 	for _, match := range matches {
-		if len(match) < 2 {
+		if len(match) < 3 {
 			continue
 		}
-		name := match[1]
+		name := match[2]
 		instrumentType, unit := inferType(name)
 
 		relPath, _ := filepath.Rel(result.RepoPath, namesPath)

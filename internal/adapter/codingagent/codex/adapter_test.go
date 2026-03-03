@@ -64,14 +64,14 @@ func TestAdapter_Extract(t *testing.T) {
 
 	rustSource := `//! Metric name constants for OpenTelemetry metrics.
 
-pub const SESSION_COUNT: &str = "codex.session.count";
-pub const SESSION_DURATION: &str = "codex.session.duration_ms";
-pub const TOOL_CALL: &str = "codex.tool.call";
-pub const TOOL_CALL_DURATION: &str = "codex.tool.call.duration_ms";
-pub const API_REQUEST: &str = "codex.api.request";
-pub const API_REQUEST_DURATION: &str = "codex.api.request.duration_ms";
-pub const TOKEN_INPUT: &str = "codex.token.input";
-pub const TOKEN_OUTPUT: &str = "codex.token.output";
+pub(crate) const TOOL_CALL_COUNT_METRIC: &str = "codex.tool.call";
+pub(crate) const TOOL_CALL_DURATION_METRIC: &str = "codex.tool.call.duration_ms";
+pub(crate) const API_CALL_COUNT_METRIC: &str = "codex.api_request";
+pub(crate) const API_CALL_DURATION_METRIC: &str = "codex.api_request.duration_ms";
+pub(crate) const SSE_EVENT_COUNT_METRIC: &str = "codex.sse_event";
+pub(crate) const SSE_EVENT_DURATION_METRIC: &str = "codex.sse_event.duration_ms";
+pub const WEBSOCKET_REQUEST_COUNT_METRIC: &str = "codex.websocket.request";
+pub const WEBSOCKET_REQUEST_DURATION_METRIC: &str = "codex.websocket.request.duration_ms";
 `
 	if err := os.WriteFile(filepath.Join(metricsDir, "names.rs"), []byte(rustSource), 0600); err != nil {
 		t.Fatalf("failed to write rust file: %v", err)
@@ -97,8 +97,8 @@ pub const TOKEN_OUTPUT: &str = "codex.token.output";
 		names[m.Name] = m
 	}
 
-	// Check counters
-	for _, name := range []string{"codex.session.count", "codex.tool.call", "codex.api.request", "codex.token.input", "codex.token.output"} {
+	// Check counters (both pub(crate) and pub forms)
+	for _, name := range []string{"codex.tool.call", "codex.api_request", "codex.sse_event", "codex.websocket.request"} {
 		m, ok := names[name]
 		if !ok {
 			t.Errorf("missing metric %q", name)
@@ -110,7 +110,7 @@ pub const TOKEN_OUTPUT: &str = "codex.token.output";
 	}
 
 	// Check histograms (duration_ms suffix)
-	for _, name := range []string{"codex.session.duration_ms", "codex.tool.call.duration_ms", "codex.api.request.duration_ms"} {
+	for _, name := range []string{"codex.tool.call.duration_ms", "codex.api_request.duration_ms", "codex.sse_event.duration_ms", "codex.websocket.request.duration_ms"} {
 		m, ok := names[name]
 		if !ok {
 			t.Errorf("missing metric %q", name)
