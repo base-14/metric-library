@@ -2,7 +2,9 @@ package fetcher
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -94,7 +96,12 @@ func (f *GitFetcher) openExisting(ctx context.Context, repoDir string, opts Fetc
 			RemoteName: "origin",
 		}
 
-		_ = w.PullContext(ctx, pullOpts)
+		if err := w.PullContext(ctx, pullOpts); err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+			log.Printf("pull %s failed, re-cloning: %v", opts.RepoURL, err)
+			reclone := opts
+			reclone.Force = true
+			return f.cloneRepo(ctx, repoDir, reclone)
+		}
 	}
 
 	return f.getResult(repo, repoDir, opts)
