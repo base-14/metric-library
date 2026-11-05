@@ -11,7 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "next": "16.1.6",
+    "next": "16.4.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -28,6 +28,6 @@
     "jsdom": "^27.4.0",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.0.16"
+    "vitest": "^4.1.0"
   }
 }
