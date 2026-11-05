@@ -2,6 +2,8 @@ package cadvisor
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/base-14/metric-library/internal/adapter"
@@ -90,4 +92,52 @@ func TestAdapterExtractIntegration(t *testing.T) {
 	}
 
 	t.Logf("Extracted %d metrics from cAdvisor", len(metrics))
+}
+
+const extractFixture = `package metrics
+
+import "github.com/prometheus/client_golang/prometheus"
+
+func NewCollector() {
+	c := &Collector{
+		containerMetrics: []containerMetric{
+			{
+				name:      "container_cpu_user_seconds_total",
+				help:      "Cumulative user cpu time consumed in seconds.",
+				valueType: prometheus.CounterValue,
+			},
+		},
+	}
+}
+`
+
+func extractFromLayout(t *testing.T, metricsSubdir string) []*adapter.RawMetric {
+	t.Helper()
+	repo := t.TempDir()
+	dir := filepath.Join(repo, metricsSubdir)
+	if err := os.MkdirAll(dir, 0750); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "prometheus.go"), []byte(extractFixture), 0600); err != nil {
+		t.Fatal(err)
+	}
+	metrics, err := NewAdapter(t.TempDir()).Extract(context.Background(), &adapter.FetchResult{RepoPath: repo})
+	if err != nil {
+		t.Fatalf("Extract failed: %v", err)
+	}
+	return metrics
+}
+
+func TestAdapterExtract_LibMetricsLayout(t *testing.T) {
+	metrics := extractFromLayout(t, filepath.Join("lib", "metrics"))
+	if len(metrics) != 1 || metrics[0].Name != "container_cpu_user_seconds_total" {
+		t.Errorf("got %d metrics, want container_cpu_user_seconds_total", len(metrics))
+	}
+}
+
+func TestAdapterExtract_LegacyMetricsLayout(t *testing.T) {
+	metrics := extractFromLayout(t, "metrics")
+	if len(metrics) != 1 {
+		t.Errorf("got %d metrics, want 1", len(metrics))
+	}
 }

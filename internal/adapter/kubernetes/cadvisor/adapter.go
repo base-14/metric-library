@@ -65,7 +65,10 @@ func (a *Adapter) Fetch(ctx context.Context, opts adapter.FetchOptions) (*adapte
 }
 
 func (a *Adapter) Extract(ctx context.Context, result *adapter.FetchResult) ([]*adapter.RawMetric, error) {
-	metricsDir := filepath.Join(result.RepoPath, "metrics")
+	metricsDir := filepath.Join(result.RepoPath, "lib", "metrics")
+	if _, err := os.Stat(metricsDir); err != nil {
+		metricsDir = filepath.Join(result.RepoPath, "metrics")
+	}
 
 	entries, err := os.ReadDir(metricsDir)
 	if err != nil {
