@@ -2,8 +2,8 @@ apiVersion: v2
 name: metric-library
 description: A metric discovery platform for cataloging and searching metrics
 type: application
-version: 0.2.0
-appVersion: "0.6.3"
+version: 0.2.1
+appVersion: "0.7.0"
 keywords:
   - metrics
   - opentelemetry
