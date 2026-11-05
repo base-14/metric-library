@@ -21,6 +21,9 @@
   --hue-purple: #a352cc;
   --hue-cyan: #007d8c;
   --hue-yellow: #8a6d00;
+  --hue-red: #cf0e5b;
+  --accent: #3871dc;
+  --accent-hover: rgb(44, 90, 176);
 }
 
 .dark {
@@ -41,6 +44,9 @@
   --hue-purple: #b877d9;
   --hue-cyan: #4fc8d8;
   --hue-yellow: #fade2a;
+  --hue-red: #ff5286;
+  --accent: #3d71d9;
+  --accent-hover: rgb(90, 134, 222);
 }
 
 @theme inline {
@@ -49,6 +55,8 @@
   --background-color-secondary: var(--bg-secondary);
   --background-color-elevated: var(--bg-elevated);
   --background-color-hover: var(--bg-hover);
+  --background-color-accent: var(--accent);
+  --background-color-accent-hover: var(--accent-hover);
   --text-color-primary: var(--text-primary);
   --text-color-secondary: var(--text-secondary);
   --text-color-max: var(--text-max);
@@ -61,6 +69,7 @@
   --color-hue-purple: var(--hue-purple);
   --color-hue-cyan: var(--hue-cyan);
   --color-hue-yellow: var(--hue-yellow);
+  --color-hue-red: var(--hue-red);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-roboto-mono);
 }

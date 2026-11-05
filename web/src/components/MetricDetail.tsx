@@ -37,25 +37,25 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
   const githubUrl = getGitHubUrl();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-elevated border border-weak rounded-[4px] shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-weak">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <h2 className="text-xl font-semibold font-mono text-gray-900 dark:text-white break-all">
+            <h2 className="text-base font-semibold font-mono text-primary break-all">
               {metric.metric_name}
             </h2>
             <button
               onClick={copyToClipboard}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors flex-shrink-0"
+              className="p-1.5 hover:bg-hover rounded transition-colors flex-shrink-0"
               aria-label="Copy metric name"
               title="Copy metric name"
             >
               {copied ? (
-                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-hue-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               ) : (
-                <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               )}
@@ -63,11 +63,11 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            className="p-2 hover:bg-hover rounded-full transition-colors"
             aria-label="Close"
           >
             <svg
-              className="w-5 h-5 text-gray-500 dark:text-gray-400"
+              className="w-5 h-5 text-secondary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -82,47 +82,47 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="p-6 text-sm overflow-y-auto max-h-[calc(90vh-80px)]">
           <div className="space-y-6">
             <section>
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">
                 Description
               </h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-primary">
                 {metric.description || 'No description available'}
               </p>
             </section>
 
             {metric.semconv_match && (metric.semconv_match === 'exact' || metric.semconv_match === 'prefix') && (
               <section>
-                <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">
                   Semantic Conventions
                 </h3>
-                <div className={`p-3 rounded-lg border ${
+                <div className={`p-3 rounded-[4px] border ${
                   metric.semconv_match === 'exact'
-                    ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
-                    : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                    ? 'bg-hue-green/10 border-hue-green/40'
+                    : 'bg-hue-yellow/10 border-hue-yellow/40'
                 }`}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`px-2 py-0.5 text-xs font-medium rounded ${
                       metric.semconv_match === 'exact'
-                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
-                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                        ? 'bg-hue-green/15 text-hue-green'
+                        : 'bg-hue-yellow/15 text-hue-yellow'
                     }`}>
                       {metric.semconv_match === 'exact' ? 'Exact Match' : 'Prefix Match'}
                     </span>
                     {metric.semconv_stability && (
-                      <span className="px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                      <span className="px-2 py-0.5 text-xs bg-secondary text-primary rounded">
                         {metric.semconv_stability}
                       </span>
                     )}
                   </div>
                   {metric.semconv_name && (
-                    <p className="text-sm font-mono text-gray-700 dark:text-gray-300 mt-1">
+                    <p className="text-sm font-mono text-primary mt-1">
                       {metric.semconv_name}
                     </p>
                   )}
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                  <p className="text-xs text-secondary mt-2">
                     {metric.semconv_match === 'exact'
                       ? 'This metric exactly matches the OpenTelemetry semantic conventions.'
                       : 'This metric has a name that starts with a semantic convention metric.'}
@@ -132,7 +132,7 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
             )}
 
             <section>
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">
                 Details
               </h3>
               <dl className="grid grid-cols-2 gap-4">
@@ -152,35 +152,35 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
 
             {metric.attributes && metric.attributes.length > 0 && (
               <section>
-                <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">
                   Attributes
                 </h3>
                 <div className="space-y-3">
                   {metric.attributes.map((attr) => (
                     <div
                       key={attr.name}
-                      className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
+                      className="p-3 bg-secondary rounded-[4px] border border-weak"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-sm font-semibold text-gray-900 dark:text-white">
+                        <span className="font-mono text-sm font-semibold text-primary">
                           {attr.name}
                         </span>
-                        <span className="px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                        <span className="px-2 py-0.5 text-xs bg-secondary text-primary rounded">
                           {attr.type}
                         </span>
                         {attr.required && (
-                          <span className="px-2 py-0.5 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded">
+                          <span className="px-2 py-0.5 text-xs bg-hue-red/15 text-hue-red rounded">
                             required
                           </span>
                         )}
                       </div>
                       {attr.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{attr.description}</p>
+                        <p className="text-sm text-secondary">{attr.description}</p>
                       )}
                       {attr.enum && attr.enum.length > 0 && (
                         <div className="mt-2">
-                          <span className="text-xs text-gray-500 dark:text-gray-400">Allowed values: </span>
-                          <span className="text-xs font-mono text-gray-700 dark:text-gray-300">
+                          <span className="text-xs text-secondary">Allowed values: </span>
+                          <span className="text-xs font-mono text-primary">
                             {attr.enum.join(', ')}
                           </span>
                         </div>
@@ -192,21 +192,21 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
             )}
 
             <section>
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">
                 Source Information
               </h3>
               <dl className="grid grid-cols-1 gap-2 text-sm">
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Repository</dt>
-                  <dd className="font-mono text-gray-700 dark:text-gray-300 break-all">{metric.repo}</dd>
+                  <dt className="text-secondary">Repository</dt>
+                  <dd className="font-mono text-primary break-all">{metric.repo}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Commit</dt>
-                  <dd className="font-mono text-gray-700 dark:text-gray-300">{metric.commit?.slice(0, 12)}</dd>
+                  <dt className="text-secondary">Commit</dt>
+                  <dd className="font-mono text-primary">{metric.commit?.slice(0, 12)}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400">Extracted At</dt>
-                  <dd className="text-gray-700 dark:text-gray-300">
+                  <dt className="text-secondary">Extracted At</dt>
+                  <dd className="text-primary">
                     {new Date(metric.extracted_at).toLocaleString()}
                   </dd>
                 </div>
@@ -216,7 +216,7 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
                       href={githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-sm rounded-[4px] hover:bg-accent-hover transition-colors"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
@@ -237,8 +237,8 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-sm text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="text-gray-900 dark:text-white">{value}</dd>
+      <dt className="text-sm text-secondary">{label}</dt>
+      <dd className="text-primary">{value}</dd>
     </div>
   );
 }

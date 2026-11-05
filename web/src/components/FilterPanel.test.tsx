@@ -153,7 +153,7 @@ describe('FilterPanel', () => {
     );
 
     const histogramButton = screen.getByText('histogram').closest('button');
-    expect(histogramButton).toHaveClass('bg-blue-100');
+    expect(histogramButton).toHaveClass('bg-hue-blue/15');
   });
 });
 
@@ -307,7 +307,7 @@ describe('SourceFilterSection', () => {
     );
 
     const otelGroupButton = screen.getByText('OpenTelemetry').closest('button');
-    expect(otelGroupButton).toHaveClass('bg-blue-50');
+    expect(otelGroupButton).toHaveClass('bg-hue-blue/10');
   });
 });
 

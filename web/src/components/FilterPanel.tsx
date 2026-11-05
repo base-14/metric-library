@@ -45,11 +45,11 @@ export function FilterPanel({ facets, selectedFilters, onFilterChange }: FilterP
 
   if (!facets) {
     return (
-      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg animate-pulse">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-4"></div>
+      <div className="p-4 bg-secondary rounded-[4px] animate-pulse">
+        <div className="h-4 bg-secondary rounded w-24 mb-4"></div>
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div key={i} className="h-6 bg-secondary rounded"></div>
           ))}
         </div>
       </div>
@@ -123,20 +123,20 @@ function FilterSection({ title, items, selectedValue, onSelect, labelMap }: Filt
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">{title}</h3>
       <div className="space-y-1">
         {sortedItems.map(([value, count]) => (
           <button
             key={value}
             onClick={() => onSelect(value)}
-            className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
+            className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-[4px] transition-colors ${
               selectedValue === value
-                ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                ? 'bg-hue-blue/15 text-hue-blue'
+                : 'hover:bg-hover text-primary'
             }`}
           >
             <span>{labelMap?.[value] || value}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
+            <span className="text-xs text-secondary bg-secondary px-2 py-0.5 rounded">
               {count}
             </span>
           </button>
@@ -170,27 +170,27 @@ function SearchableFilterSection({ title, placeholder, items, selectedValue, onS
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">{title}</h3>
       <input
         type="text"
         placeholder={placeholder}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full px-3 py-2 mb-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full px-2 py-1 mb-2 text-sm border border-weak rounded-[4px] bg-secondary text-primary placeholder:text-disabled outline-none focus:ring-1 focus:ring-hue-blue focus:border-hue-blue transition-colors"
       />
       <div className="space-y-1">
         {filteredItems.map(([value, count]) => (
           <button
             key={value}
             onClick={() => onSelect(value)}
-            className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
+            className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-[4px] transition-colors ${
               selectedValue === value
-                ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                ? 'bg-hue-blue/15 text-hue-blue'
+                : 'hover:bg-hover text-primary'
             }`}
           >
             <span>{value}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
+            <span className="text-xs text-secondary bg-secondary px-2 py-0.5 rounded">
               {count}
             </span>
           </button>
@@ -281,13 +281,13 @@ function SourceFilterSection({ items, selectedValue, onSelect }: SourceFilterSec
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Source</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">Source</h3>
       <input
         type="text"
         placeholder="Search sources..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full px-3 py-2 mb-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full px-2 py-1 mb-2 text-sm border border-weak rounded-[4px] bg-secondary text-primary placeholder:text-disabled outline-none focus:ring-1 focus:ring-hue-blue focus:border-hue-blue transition-colors"
       />
       <div className="space-y-1">
         {orderedGroupLabels.map((label) => {
@@ -299,17 +299,17 @@ function SourceFilterSection({ items, selectedValue, onSelect }: SourceFilterSec
             <div key={label}>
               <button
                 onClick={() => toggleGroup(label)}
-                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
+                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-[4px] transition-colors ${
                   hasSelection
-                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    ? 'bg-hue-blue/10 text-hue-blue'
+                    : 'hover:bg-hover text-primary'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">{isExpanded ? '▼' : '▶'}</span>
+                  <span className="text-xs text-secondary">{isExpanded ? '▼' : '▶'}</span>
                   <span className="font-medium">{label}</span>
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
+                <span className="text-xs text-secondary bg-secondary px-2 py-0.5 rounded">
                   {getGroupTotal(sources)}
                 </span>
               </button>
@@ -319,14 +319,14 @@ function SourceFilterSection({ items, selectedValue, onSelect }: SourceFilterSec
                     <button
                       key={name}
                       onClick={() => onSelect(name)}
-                      className={`w-full flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors ${
+                      className={`w-full flex items-center justify-between px-3 py-1.5 text-sm rounded-[4px] transition-colors ${
                         selectedValue === name
-                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                          ? 'bg-hue-blue/15 text-hue-blue'
+                          : 'hover:bg-hover text-secondary'
                       }`}
                     >
                       <span className="truncate">{name}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded ml-2">
+                      <span className="text-xs text-secondary bg-secondary px-2 py-0.5 rounded ml-2">
                         {count}
                       </span>
                     </button>
@@ -342,14 +342,14 @@ function SourceFilterSection({ items, selectedValue, onSelect }: SourceFilterSec
               <button
                 key={name}
                 onClick={() => onSelect(name)}
-                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
+                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-[4px] transition-colors ${
                   selectedValue === name
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    ? 'bg-hue-blue/15 text-hue-blue'
+                    : 'hover:bg-hover text-primary'
                 }`}
               >
                 <span>{name}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
+                <span className="text-xs text-secondary bg-secondary px-2 py-0.5 rounded">
                   {count}
                 </span>
               </button>
