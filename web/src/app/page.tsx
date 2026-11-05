@@ -104,10 +104,12 @@ function HomeContent() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch
     fetchMetrics();
   }, [fetchMetrics]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch
     fetchFacets(searchParams.source_name);
   }, [fetchFacets, searchParams.source_name]);
 

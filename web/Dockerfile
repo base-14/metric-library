@@ -1,5 +1,5 @@
 # Dependencies stage
-FROM node:20-alpine AS deps
+FROM node:26-alpine AS deps
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Builder stage
-FROM node:20-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 RUN npm run build
 
 # Runtime stage
-FROM node:20-alpine AS runner
+FROM node:26-alpine AS runner
 
 WORKDIR /app
 

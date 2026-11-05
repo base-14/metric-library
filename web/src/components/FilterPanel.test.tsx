@@ -10,6 +10,7 @@ const mockFacets: FacetResponse = {
   source_categories: { 'otel-collector-contrib': 20 },
   source_names: { 'metadata.yaml': 20 },
   confidence_levels: { high: 18, medium: 2 },
+  semconv_matches: {},
   units: { ms: 10, '1': 5 },
 };
 
@@ -35,6 +36,7 @@ const mockFacetsWithGroupedSources: FacetResponse = {
     'custom-source': 8,
   },
   confidence_levels: { high: 100 },
+  semconv_matches: {},
   units: { ms: 50 },
 };
 
@@ -325,6 +327,7 @@ describe('SearchableFilterSection (Component)', () => {
     source_categories: { otel: 100 },
     source_names: { 'otel-collector-contrib': 100 },
     confidence_levels: { high: 100 },
+    semconv_matches: {},
     units: { ms: 50 },
   };
 
