@@ -102,3 +102,18 @@ describe('MetricDetail', () => {
     expect(screen.queryByText('Attributes')).not.toBeInTheDocument();
   });
 });
+
+describe('MetricDetail semconv badge', () => {
+  it('exact match is a filled yellow badge', () => {
+    render(<MetricDetail metric={{ ...mockMetric, semconv_match: 'exact' }} onClose={() => {}} />);
+    const badge = screen.getByText('Exact Match');
+    expect(badge).toHaveClass('text-hue-yellow', 'bg-hue-yellow/15');
+    expect(badge).not.toHaveClass('text-hue-green');
+  });
+
+  it('prefix match is an outlined yellow badge', () => {
+    render(<MetricDetail metric={{ ...mockMetric, semconv_match: 'prefix' }} onClose={() => {}} />);
+    const badge = screen.getByText('Prefix Match');
+    expect(badge).toHaveClass('text-hue-yellow', 'border-hue-yellow', 'bg-transparent');
+  });
+});

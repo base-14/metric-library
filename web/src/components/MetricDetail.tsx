@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CanonicalMetric } from '@/types/api';
+import { badgeClass } from '@/lib/badges';
 
 interface MetricDetailProps {
   metric: CanonicalMetric;
@@ -98,17 +99,9 @@ export function MetricDetail({ metric, onClose }: MetricDetailProps) {
                 <h3 className="text-xs font-semibold uppercase tracking-[0.6px] text-secondary whitespace-nowrap mb-2">
                   Semantic Conventions
                 </h3>
-                <div className={`p-3 rounded-[4px] border ${
-                  metric.semconv_match === 'exact'
-                    ? 'bg-hue-green/10 border-hue-green/40'
-                    : 'bg-hue-yellow/10 border-hue-yellow/40'
-                }`}>
+                <div className="p-3 rounded-[4px] border bg-secondary border-weak">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`px-2 py-0.5 text-xs font-medium rounded ${
-                      metric.semconv_match === 'exact'
-                        ? 'bg-hue-green/15 text-hue-green'
-                        : 'bg-hue-yellow/15 text-hue-yellow'
-                    }`}>
+                    <span className={badgeClass('yellow', metric.semconv_match === 'prefix')}>
                       {metric.semconv_match === 'exact' ? 'Exact Match' : 'Prefix Match'}
                     </span>
                     {metric.semconv_stability && (
