@@ -150,7 +150,7 @@ func (a *Adapter) Extract(ctx context.Context, result *adapter.FetchResult) ([]*
 		}
 
 		cleanPath := filepath.Clean(path)
-		content, err := os.ReadFile(cleanPath)
+		content, err := os.ReadFile(cleanPath) //nolint:gosec // trusted repo path
 		if err != nil {
 			return nil
 		}

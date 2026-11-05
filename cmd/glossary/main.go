@@ -103,11 +103,11 @@ func runServe() error {
 		dbPath = "./data/metric-library.db"
 	}
 
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil { //nolint:gosec // operator-set DATABASE_PATH
 		return fmt.Errorf("failed to create data directory: %w", err)
 	}
 
-	log.Printf("Connecting to database at %s", dbPath)
+	log.Printf("Connecting to database at %s", dbPath) //nolint:gosec // operator-set DATABASE_PATH
 	s, err := store.NewSQLiteStoreWithMigrations(dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to initialize store: %w", err)
@@ -140,7 +140,7 @@ func runServe() error {
 		close(done)
 	}()
 
-	log.Printf("Starting server on :%s", port)
+	log.Printf("Starting server on :%s", port) //nolint:gosec // operator-set PORT
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		return fmt.Errorf("server error: %w", err)
 	}

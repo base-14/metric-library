@@ -156,7 +156,7 @@ func loadSemanticConstants(path string) map[string]string {
 func addOfficialSemconvConstants(constants map[string]string) {
 	// Constants from opentelemetry.semconv._incubating.metrics.gen_ai_metrics
 	// These follow the OpenTelemetry GenAI semantic conventions
-	officialConstants := map[string]string{
+	officialConstants := map[string]string{ //nolint:gosec // metric names, not credentials
 		"GEN_AI_SERVER_TIME_TO_FIRST_TOKEN": "gen_ai.server.time_to_first_token",
 		"GEN_AI_CLIENT_TOKEN_USAGE":         "gen_ai.client.token.usage",
 		"GEN_AI_CLIENT_OPERATION_DURATION":  "gen_ai.client.operation.duration",
